@@ -13,13 +13,13 @@ datasource db {
 }
 
 model user {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  password  String
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  name       String?
+  password   String
   superAdmin Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   permissions permission[]
 }
@@ -37,12 +37,12 @@ enum Permission {
 }
 
 model permission {
-  id        Int      @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   name      Permission
-  user      user    @relation(fields: [userId], references: [id])
+  user      user       @relation(fields: [userId], references: [id])
   userId    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 model team {
@@ -50,50 +50,53 @@ model team {
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  players   player[]
-  matches1  match[]  @relation("team1")
-  matches2  match[]  @relation("team2")
+  captain   player?  @relation("team_captain", fields: [captainId], references: [id])
+  captainId Int?     @unique
+
+  players  player[] @relation("player_team")
+  matches1 match[]  @relation("team1")
+  matches2 match[]  @relation("team2")
 }
 
 model player {
   id        Int      @id @default(autoincrement())
   name      String
-  team      team     @relation(fields: [teamId], references: [id])
-  teamId    Int
+  team      team?    @relation("player_team", fields: [teamId], references: [id])
+  teamId    Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
   statistics statistic[]
+  captainOf  team?       @relation("team_captain")
 }
 
 model match {
-  id        Int      @id @default(autoincrement())
-  team1     team     @relation("team1", fields: [team1Id], references: [id])
-  team1Id   Int
-  team2     team     @relation("team2", fields: [team2Id], references: [id])
-  team2Id   Int
-  score1    Int
-  score2    Int
-  date      DateTime 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         Int         @id @default(autoincrement())
+  team1      team        @relation("team1", fields: [team1Id], references: [id])
+  team1Id    Int
+  team2      team        @relation("team2", fields: [team2Id], references: [id])
+  team2Id    Int
+  date       DateTime
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
   statistics statistic[]
 }
 
 model statistic {
-  id        Int      @id @default(autoincrement())
-  player    player   @relation(fields: [playerId], references: [id])
-  playerId  Int
-  match     match    @relation(fields: [matchId], references: [id])
-  matchId   Int
-  score     Int     @default(0)
-  passes    Int     @default(0)
-  assists   Int     @default(0)
-  shots     Int     @default(0)
-  goals     Int     @default(0)
-  tackles   Int     @default(0)
-  interceptions Int @default(0)
-  catches   Int     @default(0)
-  saves     Int     @default(0)
+  id            Int    @id @default(autoincrement())
+  player        player @relation(fields: [playerId], references: [id])
+  playerId      Int
+  match         match  @relation(fields: [matchId], references: [id])
+  matchId       Int
+  score         Int    @default(0)
+  passes        Int    @default(0)
+  assists       Int    @default(0)
+  shots         Int    @default(0)
+  goals         Int    @default(0)
+  tackles       Int    @default(0)
+  interceptions Int    @default(0)
+  catches       Int    @default(0)
+  saves         Int    @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
