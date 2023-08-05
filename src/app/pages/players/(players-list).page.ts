@@ -131,11 +131,9 @@ export default class TeamsListComponent implements OnInit, AfterViewInit {
     });
     this.teamsService.getTeams().subscribe((teams) => {
       teams.forEach((team) => {
-        console.log(team);
         if (!team.logo) return;
         this.teamLogoById[team.id] = team.logo;
       });
-      console.log(this.teamLogoById);
     });
   }
 
@@ -153,7 +151,8 @@ export default class TeamsListComponent implements OnInit, AfterViewInit {
       };
     }
     this.dataSource.filterPredicate = (data, filter) =>
-      data.name.toLowerCase().includes(filter);
+      data.name.toLowerCase().includes(filter.toLowerCase()) ||
+      data.team?.name.toLowerCase().includes(filter.toLowerCase()) === true;
   }
 
   applyFilter(event: Event) {
