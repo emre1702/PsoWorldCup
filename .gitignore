@@ -5,6 +5,8 @@
 /tmp
 /out-tsc
 /bazel-out
+.vercel
+stats.html
 
 # Node
 /node_modules
