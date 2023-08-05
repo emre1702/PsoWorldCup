@@ -68,7 +68,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Team</th>
           <td mat-cell *matCellDef="let player" class="flex flex-row gap-2">
             <img
-              *ngIf="teamLogoById[player.team.id]"
+              *ngIf="player.team && teamLogoById[player.team.id]"
               [src]="teamLogoById[player.team.id]"
               class="w-10 h-10"
             />
