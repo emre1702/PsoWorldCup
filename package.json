@@ -16,6 +16,7 @@
   "dependencies": {
     "@analogjs/content": "^0.2.0-rc.0",
     "@analogjs/router": "^0.2.0-rc.0",
+    "@analogjs/trpc": "^0.2.0-rc.0",
     "@angular/animations": "^16.1.0",
     "@angular/cdk": "^16.1.6",
     "@angular/common": "^16.1.0",
@@ -28,7 +29,9 @@
     "@angular/platform-server": "^16.1.0",
     "@angular/router": "^16.1.0",
     "@nx/angular": "^16.4.0",
-    "@prisma/client": "^5.0.0",
+    "@prisma/client": "^5.1.1",
+    "@trpc/client": "^10.36.0",
+    "@trpc/server": "^10.36.0",
     "front-matter": "^4.0.2",
     "marked": "^5.0.2",
     "marked-gfm-heading-id": "^3.0.4",
@@ -37,7 +40,9 @@
     "pg": "^8.11.1",
     "prismjs": "^1.29.0",
     "rxjs": "~7.5.6",
+    "superjson": "^1.13.1",
     "tslib": "^2.4.0",
+    "zod": "^3.21.4",
     "zone.js": "~0.13.0"
   },
   "devDependencies": {
@@ -50,7 +55,7 @@
     "jsdom": "^22.1.0",
     "nx": "^16.4.0",
     "postcss": "^8.4.21",
-    "prisma": "^5.0.0",
+    "prisma": "^5.1.1",
     "tailwindcss": "^3.3.1",
     "typescript": "~5.0.2",
     "vite": "^4.3.9",

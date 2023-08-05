@@ -48,6 +48,7 @@ model permission {
 model team {
   id        Int      @id @default(autoincrement())
   name      String
+  logo      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   captain   player?  @relation("team_captain", fields: [captainId], references: [id])

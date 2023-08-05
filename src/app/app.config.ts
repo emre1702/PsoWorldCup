@@ -3,15 +3,31 @@ import { ApplicationConfig } from '@angular/core';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideFileRouter } from '@analogjs/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { withComponentInputBinding } from '@angular/router';
+import {
+  PreloadAllModules,
+  withComponentInputBinding,
+  withInMemoryScrolling,
+  withNavigationErrorHandler,
+  withPreloading,
+} from '@angular/router';
 import { provideContent, withMarkdownRenderer } from '@analogjs/content';
+import { provideTrpcClient } from './trpc-client';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideFileRouter(withComponentInputBinding()),
+    provideFileRouter(
+      withComponentInputBinding(),
+      withInMemoryScrolling({
+        anchorScrolling: 'enabled',
+        scrollPositionRestoration: 'enabled',
+      }),
+      withNavigationErrorHandler(console.log),
+      withPreloading(PreloadAllModules)
+    ),
     provideHttpClient(),
     provideClientHydration(),
     provideAnimations(),
     provideContent(withMarkdownRenderer()),
+    provideTrpcClient(),
   ],
 };
