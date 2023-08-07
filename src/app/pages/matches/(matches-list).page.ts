@@ -10,10 +10,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { RouterModule } from '@angular/router';
-import { MatchesService } from 'src/app/services/matches.service';
-import { TeamsService } from 'src/app/services/teams.service';
-import { ArrayReturnType } from 'src/app/types/array-return-type';
-import { AsyncReturnType } from 'src/app/types/async-return-type';
+import { MatchesService } from '../../services/matches.service';
+import { TeamsService } from '../../services/teams.service';
+import { ArrayReturnType } from '../../types/array-return-type';
+import { AsyncReturnType } from '../../types/async-return-type';
 
 @Component({
   selector: 'app-list-matches',
