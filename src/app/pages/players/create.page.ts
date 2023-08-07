@@ -12,6 +12,11 @@ import { PlayersService } from '../../services/players.service';
 import { TeamsService } from '../../services/teams.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { RouteMeta } from '@analogjs/router';
+
+export const routeMeta: RouteMeta = {
+  title: 'Create Player',
+};
 
 @Component({
   selector: 'app-players-create',
