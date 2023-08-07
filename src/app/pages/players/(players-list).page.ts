@@ -72,7 +72,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
               [src]="teamLogoById[player.team.id]"
               class="w-10 h-10"
             />
-            <span class="self-center"> {{ player.team.name }}</span>
+            <span class="self-center"> {{ player.team?.name }}</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="isCaptain">
