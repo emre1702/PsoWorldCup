@@ -39,7 +39,7 @@ enum Permission {
 model permission {
   id        Int        @id @default(autoincrement())
   name      Permission
-  user      user       @relation(fields: [userId], references: [id])
+  user      user       @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   userId    Int
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
@@ -51,18 +51,19 @@ model team {
   logo      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  captain   player?  @relation("team_captain", fields: [captainId], references: [id])
+  captain   player?  @relation("team_captain", fields: [captainId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   captainId Int?     @unique
 
   players  player[] @relation("player_team")
   matches1 match[]  @relation("team1")
   matches2 match[]  @relation("team2")
+  statistics statistic[] @relation("statistic_team")
 }
 
 model player {
   id        Int      @id @default(autoincrement())
   name      String
-  team      team?    @relation("player_team", fields: [teamId], references: [id])
+  team      team?    @relation("player_team", fields: [teamId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   teamId    Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -73,10 +74,12 @@ model player {
 
 model match {
   id         Int         @id @default(autoincrement())
-  team1      team        @relation("team1", fields: [team1Id], references: [id])
+  team1      team        @relation("team1", fields: [team1Id], references: [id], onUpdate: Cascade, onDelete: NoAction)
   team1Id    Int
-  team2      team        @relation("team2", fields: [team2Id], references: [id])
+  team2      team        @relation("team2", fields: [team2Id], references: [id], onUpdate: Cascade, onDelete: NoAction)
   team2Id    Int
+  scoreTeam1 Int         @default(0)
+  scoreTeam2 Int         @default(0)
   date       DateTime
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
@@ -85,11 +88,12 @@ model match {
 
 model statistic {
   id            Int    @id @default(autoincrement())
-  player        player @relation(fields: [playerId], references: [id])
+  player        player @relation(fields: [playerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   playerId      Int
-  match         match  @relation(fields: [matchId], references: [id])
+  match         match  @relation(fields: [matchId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   matchId       Int
-  score         Int    @default(0)
+  team          team   @relation("statistic_team", fields: [teamId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  teamId        Int
   passes        Int    @default(0)
   assists       Int    @default(0)
   shots         Int    @default(0)
