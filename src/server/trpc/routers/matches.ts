@@ -82,6 +82,10 @@ const createProcedure = publicProcedure
         .create({
           data: {
             team1: { connect: { id: input.team1Id } },
+            team2: { connect: { id: input.team2Id } },
+            date: input.date,
+            scoreTeam1: input.team1Score,
+            scoreTeam2: input.team2Score,
           },
           select: { id: true },
         })
@@ -92,10 +96,11 @@ const updateProcedure = publicProcedure
   .input(
     z.object({
       id: z.number(),
-      name: z.string(),
-      captainId: z.number().nullable(),
-      playerIds: z.array(z.number()),
-      logo: z.string().optional(),
+      date: z.date(),
+      team1Id: z.number(),
+      team2Id: z.number(),
+      team1Score: z.number(),
+      team2Score: z.number(),
     })
   )
   .mutation(
@@ -103,10 +108,11 @@ const updateProcedure = publicProcedure
       await ctx.prisma.match.update({
         where: { id: input.id },
         data: {
-          name: input.name,
-          captainId: input.captainId,
-          logo: input.logo,
-          players: { set: input.playerIds.map((e) => ({ id: e })) },
+          team1: { connect: { id: input.team1Id } },
+          team2: { connect: { id: input.team2Id } },
+          date: input.date,
+          scoreTeam1: input.team1Score,
+          scoreTeam2: input.team2Score,
         },
       })
   );
