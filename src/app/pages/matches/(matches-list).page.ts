@@ -33,8 +33,8 @@ import { AsyncReturnType } from '../../types/async-return-type';
     DatePipe,
   ],
   template: ` <div class="flex flex-row gap-4">
-      <button mat-raised-button routerLink="/players/create">
-        Create Player
+      <button mat-raised-button routerLink="/matches/create">
+        Create match
       </button>
 
       <mat-form-field>
@@ -98,7 +98,7 @@ import { AsyncReturnType } from '../../types/async-return-type';
 
       <mat-paginator
         [pageSizeOptions]="[5, 10, 25, 100]"
-        aria-label="Select page of players"
+        aria-label="Select page of matches"
       ></mat-paginator>
     </div>`,
 })
