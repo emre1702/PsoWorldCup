@@ -10,6 +10,6 @@
     }
   },
   "files": ["src/main.ts", "src/main.server.ts"],
-  "include": ["src/**/*.d.ts", "src/app/**/*.ts"],
+  "include": ["src/**/*.d.ts", "src/app/**/*.ts", "src/server/trpc/**/*.ts"],
   "exclude": ["**/*.test.ts", "**/*.spec.ts"]
 }
