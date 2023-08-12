@@ -3,11 +3,13 @@ import { router } from '../trpc';
 import { teamsRouter } from './teams';
 import { playersRouter } from './players';
 import { matchesRouter } from './matches';
+import { playerStatsRouter } from './player-stats';
 
 export const appRouter = router({
   teams: teamsRouter,
   players: playersRouter,
   matches: matchesRouter,
+  playerStats: playerStatsRouter,
 });
 
 export type AppRouter = typeof appRouter;

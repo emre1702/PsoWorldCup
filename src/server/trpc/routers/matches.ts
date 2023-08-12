@@ -69,10 +69,26 @@ const createProcedure = publicProcedure
   .input(
     z.object({
       date: z.date(),
+      round: z.number(),
       team1Id: z.number(),
       team2Id: z.number(),
       team1Score: z.number(),
       team2Score: z.number(),
+      statistics: z.array(
+        z.object({
+          playerId: z.number(),
+          teamId: z.number(),
+          score: z.number(),
+          goals: z.number(),
+          assists: z.number(),
+          catches: z.number(),
+          interceptions: z.number(),
+          tackles: z.number(),
+          passes: z.number(),
+          saves: z.number(),
+          shots: z.number(),
+        })
+      ),
     })
   )
   .output(z.number())
@@ -83,9 +99,25 @@ const createProcedure = publicProcedure
           data: {
             team1: { connect: { id: input.team1Id } },
             team2: { connect: { id: input.team2Id } },
+            round: input.round,
             date: input.date,
             scoreTeam1: input.team1Score,
             scoreTeam2: input.team2Score,
+            statistics: {
+              create: input.statistics.map((e) => ({
+                player: { connect: { id: e.playerId } },
+                score: e.score,
+                goals: e.goals,
+                assists: e.assists,
+                team: { connect: { id: e.teamId } },
+                catches: e.catches,
+                interceptions: e.interceptions,
+                tackles: e.tackles,
+                passes: e.passes,
+                saves: e.saves,
+                shots: e.shots,
+              })),
+            },
           },
           select: { id: true },
         })

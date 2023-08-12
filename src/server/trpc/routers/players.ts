@@ -75,6 +75,27 @@ const listAllProcedure = publicProcedure
       .then((e) => e.map((e) => ({ ...e, isCaptain: !!e.captainOf })))
   );
 
+const listByTeamProcedure = publicProcedure
+  .input(z.number())
+  .output(
+    z.array(
+      z.object({
+        id: z.number(),
+        name: z.string(),
+      })
+    )
+  )
+  .query(({ ctx, input }) =>
+    ctx.prisma.player.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+      orderBy: { name: 'asc' },
+      where: { teamId: input },
+    })
+  );
+
 const createProcedure = publicProcedure
   .input(
     z.object({
@@ -119,6 +140,7 @@ export const playersRouter = router({
   detail: detailProcedure,
   listWithoutTeam: listWithoutTeamProcedure,
   listAll: listAllProcedure,
+  listByTeam: listByTeamProcedure,
   create: createProcedure,
   update: updateProcedure,
   delete: deleteProcedure,

@@ -66,13 +66,15 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
         </ng-container>
         <ng-container matColumnDef="team">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Team</th>
-          <td mat-cell *matCellDef="let player" class="flex flex-row gap-2">
-            <img
-              *ngIf="player.team && teamLogoById[player.team.id]"
-              [src]="teamLogoById[player.team.id]"
-              class="w-10 h-10"
-            />
-            <span class="self-center"> {{ player.team?.name }}</span>
+          <td mat-cell *matCellDef="let player">
+            <div class="flex flex-row gap-2">
+              <img
+                *ngIf="player.team && teamLogoById[player.team.id]"
+                [src]="teamLogoById[player.team.id]"
+                class="w-10 h-10"
+              />
+              <span class="self-center"> {{ player.team?.name }}</span>
+            </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="isCaptain">
@@ -121,8 +123,12 @@ export default class TeamsListComponent implements OnInit, AfterViewInit {
   teamLogoById: { [id: number]: string } = {};
   loading = true;
 
-  @ViewChild(MatPaginator) paginator?: MatPaginator;
-  @ViewChild(MatSort) sort?: MatSort;
+  @ViewChild(MatPaginator) set paginator(value: MatPaginator) {
+    this.dataSource.paginator = value;
+  }
+  @ViewChild(MatSort) set sort(value: MatSort) {
+    this.dataSource.sort = value;
+  }
 
   ngOnInit() {
     this.playersService.getPlayers().subscribe((players) => {
@@ -138,18 +144,14 @@ export default class TeamsListComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    if (this.paginator) this.dataSource.paginator = this.paginator;
-    if (this.sort) {
-      this.dataSource.sort = this.sort;
-      this.dataSource.sortingDataAccessor = (item, property) => {
-        switch (property) {
-          case 'team':
-            return item.team?.name;
-          default:
-            return (item as any)[property];
-        }
-      };
-    }
+    this.dataSource.sortingDataAccessor = (item, property) => {
+      switch (property) {
+        case 'team':
+          return item.team?.name;
+        default:
+          return (item as any)[property];
+      }
+    };
     this.dataSource.filterPredicate = (data, filter) =>
       data.name.toLowerCase().includes(filter.toLowerCase()) ||
       data.team?.name.toLowerCase().includes(filter.toLowerCase()) === true;

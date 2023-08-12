@@ -2,6 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 // npx prisma migrate dev --name [Name]
+// npx prisma migrate deploy
+// npx prisma generate
 
 generator client {
   provider = "prisma-client-js"
@@ -54,9 +56,9 @@ model team {
   captain   player?  @relation("team_captain", fields: [captainId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   captainId Int?     @unique
 
-  players  player[] @relation("player_team")
-  matches1 match[]  @relation("team1")
-  matches2 match[]  @relation("team2")
+  players    player[]    @relation("player_team")
+  matches1   match[]     @relation("team1")
+  matches2   match[]     @relation("team2")
   statistics statistic[] @relation("statistic_team")
 }
 
@@ -81,6 +83,7 @@ model match {
   scoreTeam1 Int         @default(0)
   scoreTeam2 Int         @default(0)
   date       DateTime
+  round      Int         @default(0)
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   statistics statistic[]
@@ -94,6 +97,7 @@ model statistic {
   matchId       Int
   team          team   @relation("statistic_team", fields: [teamId], references: [id], onUpdate: Cascade, onDelete: NoAction)
   teamId        Int
+  score         Int    @default(0)
   passes        Int    @default(0)
   assists       Int    @default(0)
   shots         Int    @default(0)

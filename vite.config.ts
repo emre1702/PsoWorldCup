@@ -36,6 +36,7 @@ export default defineConfig(({ mode }) => ({
     analog({
       vite: {
         inlineStylesExtension: 'scss',
+        tsconfig: path.resolve(__dirname, './tsconfig.app.json'),
       },
       nitro: {
         preset: 'vercel',

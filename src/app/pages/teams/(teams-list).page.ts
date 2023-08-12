@@ -108,8 +108,12 @@ export default class TeamsListComponent implements OnInit, AfterViewInit {
   > = new MatTableDataSource();
   loading = true;
 
-  @ViewChild(MatPaginator) paginator?: MatPaginator;
-  @ViewChild(MatSort) sort?: MatSort;
+  @ViewChild(MatPaginator) set paginator(value: MatPaginator) {
+    this.dataSource.paginator = value;
+  }
+  @ViewChild(MatSort) set sort(value: MatSort) {
+    this.dataSource.sort = value;
+  }
 
   ngOnInit() {
     this.teamsService.getTeams().subscribe((teams) => {
@@ -119,8 +123,14 @@ export default class TeamsListComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    if (this.paginator) this.dataSource.paginator = this.paginator;
-    if (this.sort) this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = (team, property) => {
+      switch (property) {
+        case 'captain':
+          return team.captain?.toLowerCase();
+        default:
+          return (team as any)[property];
+      }
+    };
     this.dataSource.filterPredicate = (data, filter) => {
       return (
         data.name.toLowerCase().includes(filter) ||

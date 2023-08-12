@@ -16,6 +16,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TeamsService } from '../../services/teams.service';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
+import { TrpcClient } from '../../trpc-client';
 
 @Component({
   selector: 'app-team-edit',
@@ -95,10 +96,7 @@ import { Router } from '@angular/router';
       <mat-form-field>
         <mat-label>Players</mat-label>
         <mat-select [formControlName]="formFields.players" multiple>
-          <mat-option
-            *ngFor="let player of playersWithoutTeam$ | async"
-            [value]="player"
-          >
+          <mat-option *ngFor="let player of players" [value]="player">
             {{ player.name }}
           </mat-option>
         </mat-select>
@@ -150,8 +148,7 @@ import { Router } from '@angular/router';
 export default class TeamEditPage implements OnInit {
   @Input({ required: true }) teamId!: string;
 
-  private readonly playersService = inject(PlayersService);
-  private readonly teamsService = inject(TeamsService);
+  private readonly trpcClient = inject(TrpcClient);
   private readonly router = inject(Router);
 
   readonly formFields = {
@@ -188,15 +185,15 @@ export default class TeamEditPage implements OnInit {
       }
     ),
   });
-  playersWithoutTeam$ = this.playersService.getPlayersWithoutTeam();
-  teams$ = this.teamsService.getTeams();
+  players: { id: number; name: string }[] = [];
+  teams$ = this.trpcClient.teams.list.query();
   fileTooLarge = false;
   loading = true;
 
   ngOnInit(): void {
     const teamIdNumber = Number(this.teamId);
     if (isNaN(teamIdNumber)) return;
-    this.teamsService.getDetail(teamIdNumber).subscribe(async (team) => {
+    this.trpcClient.teams.detail.query(teamIdNumber).subscribe(async (team) => {
       this.loading = false;
       if (!team) return;
 
@@ -207,18 +204,25 @@ export default class TeamEditPage implements OnInit {
         [this.formFields.players]: team.players,
       });
     });
+    this.trpcClient.players.listWithoutTeam.query().subscribe((e) => {
+      this.players.push(...e);
+    });
+    this.trpcClient.players.listByTeam.query(teamIdNumber).subscribe((e) => {
+      this.formGroup.get(this.formFields.players)?.setValue(e);
+      this.players.push(...e);
+    });
   }
 
   updateTeam() {
     const teamIdNumber = Number(this.teamId);
     if (isNaN(teamIdNumber)) return;
-    this.teamsService
-      .updateTeam({
+    this.trpcClient.teams.update
+      .mutate({
         name: this.formGroup.value[this.formFields.name] as string,
         logo: this.formGroup.value[this.formFields.logo] as string,
-        captainId: (
-          this.formGroup.value[this.formFields.captain] as { id: number }
-        ).id,
+        captainId: this.formGroup.value[this.formFields.captain] as
+          | number
+          | null,
         playerIds: (
           this.formGroup.value[this.formFields.players] as { id: number }[]
         ).map((e) => e.id),

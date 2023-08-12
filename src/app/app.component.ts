@@ -68,6 +68,7 @@ export class AppComponent {
     { route: '/teams', name: 'Teams' },
     { route: '/players', name: 'Players' },
     { route: '/matches', name: 'Matches' },
+    { route: '/player-stats', name: 'Player Stats' },
   ];
 
   mobileQuery: MediaQueryList;

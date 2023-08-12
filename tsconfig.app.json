@@ -4,9 +4,12 @@
   "compilerOptions": {
     "composite": true,
     "outDir": "../../dist/out-tsc",
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "paths": {
+      "src/*": ["src/*"]
+    }
   },
   "files": ["src/main.ts", "src/main.server.ts"],
-  "include": ["src/**/*.d.ts", "src/app/**/*.ts", "src/server/trpc/**/*.ts"],
+  "include": ["src/**/*.d.ts", "src/app/**/*.ts"],
   "exclude": ["**/*.test.ts", "**/*.spec.ts"]
 }

@@ -48,7 +48,7 @@ import { AsyncReturnType } from '../../types/async-return-type';
       </mat-form-field>
     </div>
 
-    <div class="mat-elevation-z8">
+    <div class="mat-elevation-z8 overflow-auto">
       <mat-spinner *ngIf="loading"></mat-spinner>
       <table mat-table [dataSource]="dataSource" matSort *ngIf="!loading">
         <ng-container matColumnDef="id">
@@ -66,7 +66,7 @@ import { AsyncReturnType } from '../../types/async-return-type';
         <ng-container matColumnDef="score">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Score</th>
           <td mat-cell *matCellDef="let match">
-            {{ match.team1_score }} - {{ match.team2_score }}
+            {{ match.scoreTeam1 }} - {{ match.scoreTeam2 }}
           </td>
         </ng-container>
         <ng-container matColumnDef="date">
@@ -77,9 +77,9 @@ import { AsyncReturnType } from '../../types/async-return-type';
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef>Actions</th>
           <td mat-cell *matCellDef="let match">
-            <a mat-icon-button [routerLink]="['/matches/edit', match.id]">
+            <!--<a mat-icon-button [routerLink]="['/matches/edit', match.id]">
               <mat-icon>edit</mat-icon>
-            </a>
+            </a>-->
             <button mat-icon-button (click)="deleteMatch(match.id)">
               <mat-icon color="warn"> delete </mat-icon>
             </button>
@@ -120,8 +120,12 @@ export default class ListMatchesComponent {
   teamLogoById: { [id: number]: string } = {};
   loading = true;
 
-  @ViewChild(MatPaginator) paginator?: MatPaginator;
-  @ViewChild(MatSort) sort?: MatSort;
+  @ViewChild(MatPaginator) set paginator(value: MatPaginator) {
+    this.dataSource.paginator = value;
+  }
+  @ViewChild(MatSort) set sort(value: MatSort) {
+    this.dataSource.sort = value;
+  }
 
   ngOnInit() {
     this.matchesService.getMatches().subscribe((matches) => {
@@ -137,12 +141,21 @@ export default class ListMatchesComponent {
   }
 
   ngAfterViewInit() {
-    if (this.paginator) this.dataSource.paginator = this.paginator;
-    if (this.sort) this.dataSource.sort = this.sort;
-
     this.dataSource.filterPredicate = (data, filter) =>
       data.team1.toLowerCase().includes(filter.toLowerCase()) ||
       data.team2.toLowerCase().includes(filter.toLowerCase());
+    this.dataSource.sortingDataAccessor = (item, property) => {
+      switch (property) {
+        case 'home':
+          return item.team1.toLowerCase();
+        case 'away':
+          return item.team2.toLowerCase();
+        case 'score':
+          return item.scoreTeam1 + item.scoreTeam2;
+        default:
+          return (item as any)[property];
+      }
+    };
   }
 
   applyFilter(event: Event) {
