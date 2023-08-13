@@ -1,11 +1,13 @@
 import { MediaMatcher } from '@angular/cdk/layout';
-import { NgFor, NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { NgFor, NgClass, NgIf } from '@angular/common';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { injectTRPCClient } from './trpc-client';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +18,7 @@ import { RouterModule } from '@angular/router';
     MatSidenavModule,
     MatListModule,
     MatIconModule,
+    NgIf,
     NgFor,
     NgClass,
   ],
@@ -58,12 +61,12 @@ import { RouterModule } from '@angular/router';
       </mat-sidenav>
 
       <mat-sidenav-content class="p-5">
-        <router-outlet></router-outlet>
+        <router-outlet *ngIf="!loading"></router-outlet>
       </mat-sidenav-content>
     </mat-sidenav-container>
   </div> `,
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   navigations: { route: string; name: string }[] = [
     { route: '/teams', name: 'Teams' },
     { route: '/players', name: 'Players' },
@@ -72,12 +75,41 @@ export class AppComponent {
   ];
 
   mobileQuery: MediaQueryList;
+  loading = true;
+  trpcClient = injectTRPCClient();
 
   private _mobileQueryListener: () => void;
 
-  constructor(changeDetectorRef: ChangeDetectorRef, media: MediaMatcher) {
+  constructor(
+    changeDetectorRef: ChangeDetectorRef,
+    media: MediaMatcher,
+    private readonly router: ActivatedRoute
+  ) {
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this._mobileQueryListener);
+  }
+
+  ngOnInit() {
+    this.router.url.subscribe(() => this.onNavigate());
+  }
+
+  private async onNavigate() {
+    this.loading = true;
+    if (typeof window === 'undefined') return;
+
+    console.log(localStorage);
+    const token = localStorage.getItem('discord-token');
+    console.log(token, window.location.pathname);
+    if (window.location.pathname === '/auth/discord-callback' || token) {
+      this.loading = false;
+      return;
+    }
+
+    const { authUrl, state } = await firstValueFrom(
+      this.trpcClient.authentication.authUrl.query()
+    );
+    localStorage.setItem('discord-state', state);
+    window.location.href = authUrl;
   }
 }

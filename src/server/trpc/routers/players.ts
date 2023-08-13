@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { publicProcedure, router } from '../trpc';
+import { protectedProcedure, router } from '../trpc';
 
-const detailProcedure = publicProcedure
+const detailProcedure = protectedProcedure
   .input(z.number())
   .output(
     z
@@ -31,7 +31,7 @@ const detailProcedure = publicProcedure
       .then((e) => (e ? { ...e, isCaptain: !!e.captainOf } : e))
   );
 
-const listWithoutTeamProcedure = publicProcedure
+const listWithoutTeamProcedure = protectedProcedure
   .output(
     z.array(
       z.object({
@@ -51,7 +51,7 @@ const listWithoutTeamProcedure = publicProcedure
     })
   );
 
-const listAllProcedure = publicProcedure
+const listAllProcedure = protectedProcedure
   .output(
     z.array(
       z.object({
@@ -75,7 +75,7 @@ const listAllProcedure = publicProcedure
       .then((e) => e.map((e) => ({ ...e, isCaptain: !!e.captainOf })))
   );
 
-const listByTeamProcedure = publicProcedure
+const listByTeamProcedure = protectedProcedure
   .input(z.number())
   .output(
     z.array(
@@ -96,7 +96,7 @@ const listByTeamProcedure = publicProcedure
     })
   );
 
-const createProcedure = publicProcedure
+const createProcedure = protectedProcedure
   .input(
     z.object({
       name: z.string(),
@@ -114,7 +114,7 @@ const createProcedure = publicProcedure
         .then((e) => e.id)
   );
 
-const updateProcedure = publicProcedure
+const updateProcedure = protectedProcedure
   .input(
     z.object({
       id: z.number(),
@@ -130,7 +130,7 @@ const updateProcedure = publicProcedure
       })
   );
 
-const deleteProcedure = publicProcedure
+const deleteProcedure = protectedProcedure
   .input(z.number())
   .mutation(async ({ input, ctx }) => {
     await ctx.prisma.player.delete({ where: { id: input } });

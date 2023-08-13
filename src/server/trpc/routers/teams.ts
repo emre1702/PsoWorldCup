@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { publicProcedure, router } from '../trpc';
+import { protectedProcedure, router } from '../trpc';
 
-const detailProcedure = publicProcedure
+const detailProcedure = protectedProcedure
   .input(z.number())
   .output(
     z
@@ -43,7 +43,7 @@ const detailProcedure = publicProcedure
       )
   );
 
-const listProcedure = publicProcedure
+const listProcedure = protectedProcedure
   .output(
     z.array(
       z.object({
@@ -68,7 +68,7 @@ const listProcedure = publicProcedure
       .then((e) => e.map((e) => ({ ...e, captain: e.captain?.name })))
   );
 
-const createProcedure = publicProcedure
+const createProcedure = protectedProcedure
   .input(
     z.object({
       name: z.string(),
@@ -93,7 +93,7 @@ const createProcedure = publicProcedure
         .then((e) => e.id)
   );
 
-const updateProcedure = publicProcedure
+const updateProcedure = protectedProcedure
   .input(
     z.object({
       id: z.number(),
@@ -116,7 +116,7 @@ const updateProcedure = publicProcedure
       })
   );
 
-const deleteProcedure = publicProcedure
+const deleteProcedure = protectedProcedure
   .input(z.number())
   .mutation(async ({ input, ctx }) => {
     await ctx.prisma.team.delete({ where: { id: input } });
