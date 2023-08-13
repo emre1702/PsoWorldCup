@@ -29,7 +29,8 @@ const unauthorizedHandlerLink: TRPCLink<AppRouter> = () => {
         error: (error) => {
           if (
             error.message.startsWith('DiscordHTTPError: 401') ||
-            error.data?.code === 'UNAUTHORIZED'
+            error.data?.code === 'UNAUTHORIZED' ||
+            ('statusCode' in error && error.statusCode === 401)
           ) {
             localStorage.removeItem('discord-token');
             localStorage.removeItem('discord-state');
