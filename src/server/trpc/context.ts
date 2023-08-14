@@ -9,6 +9,7 @@ import { createDiscordOAuth2 } from './helpers/discord-oauth2.helpers';
 export const createContext = async (event: H3Event) => {
   //
   const discordAuthenticationToken = event.node.req.headers.authorization;
+  console.log(event.node.req.headers);
   console.log(discordAuthenticationToken);
   const user =
     discordAuthenticationToken && discordAuthenticationToken !== 'undefined'
