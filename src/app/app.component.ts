@@ -6,7 +6,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { injectTRPCClient } from './trpc-client';
+import { TrpcHeaders, injectTRPCClient } from './trpc-client';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -88,6 +88,8 @@ export class AppComponent implements OnInit {
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this._mobileQueryListener);
+
+    TrpcHeaders.mutate(headers => headers['authorization'] = localStorage.getItem('discord-token') ?? 'No token set')
   }
 
   ngOnInit() {

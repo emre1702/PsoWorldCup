@@ -1,7 +1,7 @@
 import { AppRouter } from '../server/trpc/routers';
 import { createTrpcClient } from '@analogjs/trpc';
 import { inject } from '@angular/core';
-import { TRPCLink, httpBatchLink } from '@trpc/client';
+import { TRPCLink } from '@trpc/client';
 import { observable } from '@trpc/server/observable';
 import superjson from 'superjson';
 
@@ -58,7 +58,6 @@ export const { provideTrpcClient, TrpcClient, TrpcHeaders } = createTrpcClient<A
     ],
   },
 });
-TrpcHeaders.mutate(headers => headers['authorization'] = localStorage.getItem('discord-token') ?? 'No token set')
 
 export function injectTRPCClient() {
   return inject(TrpcClient);
