@@ -54,7 +54,7 @@ function outputAllValuesRecursive(obj: any, keyPrefix = '') {
     for (const key in obj) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
         const element = obj[key];
-        console.log(`${key}: ${element}`);
+        console.log(`${keyPrefix}${key}:`, element);
         outputAllValuesRecursive(element, `${keyPrefix}${key}.`);
       }
     }
