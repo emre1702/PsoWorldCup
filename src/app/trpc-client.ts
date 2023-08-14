@@ -28,13 +28,7 @@ const unauthorizedHandlerLink: TRPCLink<AppRouter> = () => {
           observer.next(result);
         },
         error: (error) => {
-          console.log(JSON.stringify(error.data));
-          console.log(
-            'statusCode' in error.data!
-              ? error.data.statusCode
-              : 'no status code'
-          );
-          console.log(Object.keys(error.data!));
+          outputAllValuesRecursive(error);
           if (
             error.message.startsWith('DiscordHTTPError: 401') ||
             error.data?.code === 'UNAUTHORIZED' ||
@@ -54,6 +48,18 @@ const unauthorizedHandlerLink: TRPCLink<AppRouter> = () => {
     });
   };
 };
+
+function outputAllValuesRecursive(obj: any, keyPrefix = '') {
+  if (typeof obj === 'object') {
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        const element = obj[key];
+        console.log(`${key}: ${element}`);
+        outputAllValuesRecursive(element, `${keyPrefix}${key}.`);
+      }
+    }
+  }
+}
 
 export const { provideTrpcClient, TrpcClient } = createTrpcClient<AppRouter>({
   url: `${getBaseUrl()}/api/trpc`,
