@@ -1,4 +1,4 @@
-import { AppRouter } from '../server/trpc/routers';
+import { AppRouter } from './server/trpc/routers';
 import { createTrpcClient } from '@analogjs/trpc';
 import { inject } from '@angular/core';
 import { TRPCLink, httpBatchLink } from '@trpc/client';

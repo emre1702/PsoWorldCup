@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import PlayerStatsTableComponent from './player-stats-table.component';
-import { injectTRPCClient } from '../../trpc-client';
+import { injectTRPCClient } from '../../../trpc-client';
 import { MatRadioModule } from '@angular/material/radio';
 import { RouterOutputs } from '../../../server/trpc/routers';
 import { NgFor, NgIf } from '@angular/common';

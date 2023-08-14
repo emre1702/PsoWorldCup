@@ -5,15 +5,15 @@
     "composite": true,
     "outDir": "../../dist/out-tsc",
     "useDefineForClassFields": false,
-    "paths": {
-      "src/*": ["src/*"]
-    }
+    "types": [],
+    "target": "ES2022"
   },
   "files": ["src/main.ts", "src/main.server.ts"],
   "include": [
     "src/**/*.d.ts",
-    "src/app/**/*.ts",
-    "src/server/trpc/**/*.ts",
+    "src/app/services/**/*.ts",
+    "src/app/pages/**/*.ts",
+    "src/app/types/**/*.ts",
     "src/helpers/**/*.ts"
   ],
   "exclude": ["**/*.test.ts", "**/*.spec.ts"]

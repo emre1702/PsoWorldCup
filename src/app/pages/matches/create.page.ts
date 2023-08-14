@@ -19,7 +19,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { RouteMeta } from '@analogjs/router';
-import { injectTRPCClient } from '../../trpc-client';
+import { injectTRPCClient } from '../../../trpc-client';
 import {
   MatTable,
   MatTableDataSource,

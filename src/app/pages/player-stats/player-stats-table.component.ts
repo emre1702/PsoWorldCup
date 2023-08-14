@@ -7,7 +7,7 @@ import {
 import { RouterOutputs } from '../../../server/trpc/routers';
 import { NgFor, NgIf } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { injectTRPCClient } from '../../trpc-client';
+import { injectTRPCClient } from '../../../trpc-client';
 import { ArrayReturnType } from '../../types/array-return-type';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';

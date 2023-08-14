@@ -16,7 +16,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TeamsService } from '../../services/teams.service';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
-import { TrpcClient } from '../../trpc-client';
+import { TrpcClient } from '../../../trpc-client';
 
 @Component({
   selector: 'app-team-edit',

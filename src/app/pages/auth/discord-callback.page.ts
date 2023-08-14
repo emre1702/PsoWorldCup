@@ -1,6 +1,6 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { injectTRPCClient } from '../../trpc-client';
+import { injectTRPCClient } from '../../../trpc-client';
 import { firstValueFrom, of } from 'rxjs';
 import { JsonPipe, NgIf } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';

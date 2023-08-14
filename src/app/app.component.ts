@@ -6,7 +6,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { injectTRPCClient } from './trpc-client';
+import { injectTRPCClient } from '../trpc-client';
 import { firstValueFrom } from 'rxjs';
 
 @Component({

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { injectTRPCClient } from '../trpc-client';
+import { injectTRPCClient } from '../../trpc-client';
 import { RouterInputs, RouterOutputs } from 'src/server/trpc/routers';
 import { Observable } from 'rxjs';
 
