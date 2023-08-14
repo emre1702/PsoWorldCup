@@ -29,6 +29,10 @@ const unauthorizedHandlerLink: TRPCLink<AppRouter> = () => {
         },
         error: (error) => {
           console.log(JSON.stringify(error));
+          console.log(error);
+          console.log(
+            'statusCode' in error ? error.statusCode : 'no status code'
+          );
           if (
             error.message.startsWith('DiscordHTTPError: 401') ||
             error.data?.code === 'UNAUTHORIZED' ||
