@@ -88,11 +88,11 @@ export class AppComponent implements OnInit {
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this._mobileQueryListener);
-
-    TrpcHeaders.mutate(headers => headers['authorization'] = localStorage.getItem('discord-token') ?? 'No token set')
   }
 
   ngOnInit() {
+    TrpcHeaders.mutate(headers => headers['authorization'] = localStorage.getItem('discord-token') ?? 'No token set');
+
     this.router.url.subscribe(() => this.onNavigate());
   }
 
