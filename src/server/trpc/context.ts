@@ -1,5 +1,5 @@
 import { prisma } from './db';
-import type { H3Event } from 'h3';
+import { getRequestHeader, H3Event } from 'h3';
 import { createDiscordOAuth2 } from './helpers/discord-oauth2.helpers';
 import { outputAllValuesRecursive } from '../../helpers/object.helpers';
 
@@ -9,7 +9,7 @@ import { outputAllValuesRecursive } from '../../helpers/object.helpers';
  */
 export const createContext = async (event: H3Event) => {
   //
-  const discordAuthenticationToken = event.node.req.headers.authorization;
+  const discordAuthenticationToken = getRequestHeader(event, 'authorization');
   outputAllValuesRecursive(event.node.req.headers);
   console.log(discordAuthenticationToken);
   const user =
