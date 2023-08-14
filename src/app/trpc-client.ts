@@ -1,10 +1,9 @@
 import { AppRouter } from '../server/trpc/routers';
 import { createTrpcClient } from '@analogjs/trpc';
 import { inject } from '@angular/core';
-import { TRPCLink } from '@trpc/client';
-import { observable } from '@trpc/server/observable';
+import { TRPCLink, httpBatchLink } from '@trpc/client';
+import { observable, tap } from '@trpc/server/observable';
 import superjson from 'superjson';
-
 
 function getBaseUrl() {
   if (typeof window !== 'undefined')
@@ -55,6 +54,14 @@ export const { provideTrpcClient, TrpcClient, TrpcHeaders } = createTrpcClient<A
     transformer: superjson,
     links: [
       unauthorizedHandlerLink,
+      httpBatchLink({
+        url: `${getBaseUrl()}/api/trpc`,
+        headers() {
+          return {
+            Authorization: localStorage.getItem('discord-token') ?? undefined,
+          };
+        },
+      }),
     ],
   },
 });

@@ -8,7 +8,6 @@ import { outputAllValuesRecursive } from '../../helpers/object.helpers';
  * @link https://trpc.io/docs/context
  */
 export const createContext = async (event: H3Event) => {
-  //
   const discordAuthenticationToken = getRequestHeader(event, 'authorization');
   outputAllValuesRecursive(event.node.req.headers);
   console.log(discordAuthenticationToken);
