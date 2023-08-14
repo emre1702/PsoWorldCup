@@ -4,7 +4,6 @@ import { inject } from '@angular/core';
 import { TRPCLink, httpBatchLink } from '@trpc/client';
 import { observable } from '@trpc/server/observable';
 import superjson from 'superjson';
-import { HTTPHeaders } from '@trpc/client/src/links/types';
 
 
 function getBaseUrl() {
@@ -24,8 +23,6 @@ function getBaseUrl() {
 const unauthorizedHandlerLink: TRPCLink<AppRouter> = () => {
   return ({ next, op }) => {
     return observable((observer) => {
-      TrpcHeaders.set({ ['Authorization']: localStorage.getItem('discord-token') ?? undefined });
-      TrpcHeaders.set({ ['authorization']: localStorage.getItem('discord-token') ?? undefined });
       const subscription = next(op).subscribe({
         next: (result) => {
           console.log(result);
@@ -58,12 +55,10 @@ export const { provideTrpcClient, TrpcClient, TrpcHeaders } = createTrpcClient<A
     transformer: superjson,
     links: [
       unauthorizedHandlerLink,
-      httpBatchLink({
-        url: `${getBaseUrl()}/api/trpc`,
-      }),
     ],
   },
 });
+TrpcHeaders.mutate(headers => headers['authorization'] = localStorage.getItem('discord-token') ?? 'No token set')
 
 export function injectTRPCClient() {
   return inject(TrpcClient);
