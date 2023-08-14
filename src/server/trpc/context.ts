@@ -7,7 +7,7 @@ import { createDiscordOAuth2 } from './helpers/discord-oauth2.helpers';
  * @link https://trpc.io/docs/context
  */
 export const createContext = async (event: H3Event) => {
-  const discordAuthenticationToken = event.node.req.headers['discord-token'];
+  const discordAuthenticationToken = event.node.req.headers['Discord-Token'];
   console.log(discordAuthenticationToken);
   const user =
     discordAuthenticationToken && discordAuthenticationToken !== 'undefined'

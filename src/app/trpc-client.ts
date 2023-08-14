@@ -58,7 +58,7 @@ export const { provideTrpcClient, TrpcClient } = createTrpcClient<AppRouter>({
         url: `${getBaseUrl()}/api/trpc`,
         headers() {
           return {
-            'discord-token': localStorage.getItem('discord-token') ?? undefined,
+            'Discord-Token': localStorage.getItem('discord-token') ?? undefined,
           };
         },
       }),
