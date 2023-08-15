@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { injectTRPCClient } from '../trpc-client';
+import { injectTRPCClient } from '../../trpc-client';
 import { RouterInputs, RouterOutputs } from 'src/server/trpc/routers';
 import { Observable } from 'rxjs';
 
@@ -40,6 +40,7 @@ export class PlayersService {
   getPlayers(
     params: RouterInputs['players']['listAll']
   ): Observable<RouterOutputs['players']['listAll']> {
+    console.log('get players', params);
     return this.trpcClient.players.listAll.query(params);
   }
 }

@@ -7,7 +7,7 @@ import {
 import { RouterOutputs } from '../../../server/trpc/routers';
 import { NgFor, NgIf } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { injectTRPCClient } from '../../trpc-client';
+import { getAuth, injectTRPCClient } from '../../../trpc-client';
 import { ArrayReturnType } from '../../types/array-return-type';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -152,7 +152,7 @@ export default class PlayerStatsTableComponent implements OnInit {
   @ViewChild(MatTable) table?: MatTable<any>;
 
   ngOnInit(): void {
-    this.trpcClient.teams.list.query().subscribe((teams) => {
+    this.trpcClient.teams.list.query(getAuth()).subscribe((teams) => {
       teams.forEach((team) => {
         this.teamNameAndLogoById[team.id] = {
           name: team.name,

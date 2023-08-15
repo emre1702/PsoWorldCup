@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import PlayerStatsTableComponent from './player-stats-table.component';
-import { injectTRPCClient } from '../../trpc-client';
+import { getAuth, injectTRPCClient } from '../../../trpc-client';
 import { MatRadioModule } from '@angular/material/radio';
 import { RouterOutputs } from '../../../server/trpc/routers';
 import { NgFor, NgIf } from '@angular/common';
@@ -54,14 +54,14 @@ export default class PlayerStatsListComponent {
       name: 'Average',
       loadFunc: () =>
         this.trpcClient.playerStats.listAverage
-          .query()
+          .query(getAuth())
           .pipe(tap((e) => (this.playerStats = e))),
     },
     {
       name: 'Sum',
       loadFunc: () =>
         this.trpcClient.playerStats.listSum
-          .query()
+          .query(getAuth())
           .pipe(tap((e) => (this.playerStats = e))),
     },
   ];

@@ -20,6 +20,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { PlayersService } from '../../services/players.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { getAuth, getInputWithAuth } from '../../../trpc-client';
 
 @Component({
   selector: 'app-players-list',
@@ -131,11 +132,11 @@ export default class TeamsListComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.playersService.getPlayers().subscribe((players) => {
+    this.playersService.getPlayers(getAuth()).subscribe((players) => {
       this.dataSource.data = players;
       this.loading = false;
     });
-    this.teamsService.getTeams().subscribe((teams) => {
+    this.teamsService.getTeams(getAuth()).subscribe((teams) => {
       teams.forEach((team) => {
         if (!team.logo) return;
         this.teamLogoById[team.id] = team.logo;
@@ -170,7 +171,7 @@ export default class TeamsListComponent implements OnInit, AfterViewInit {
   deletePlayer(id: number) {
     // with confirm
     if (!confirm('Are you sure you want to delete this player?')) return;
-    this.playersService.deletePlayer(id).subscribe(() => {
+    this.playersService.deletePlayer(getInputWithAuth(id)).subscribe(() => {
       this.dataSource.data = this.dataSource.data.filter(
         (player) => player.id !== id
       );

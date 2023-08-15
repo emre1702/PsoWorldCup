@@ -1,5 +1,5 @@
 import ArrayHelpers from '../../../helpers/array.helpers';
-import { publicProcedure, router } from '../trpc';
+import { protectedProcedure, router } from '../trpc';
 import { z } from 'zod';
 
 const playerStatsOutput = z.array(
@@ -19,7 +19,7 @@ const playerStatsOutput = z.array(
   })
 );
 
-const listSumProcedure = publicProcedure
+const listSumProcedure = protectedProcedure
   .output(playerStatsOutput)
   .query(({ ctx }) =>
     ctx.prisma.statistic
@@ -62,7 +62,7 @@ const listSumProcedure = publicProcedure
       )
   );
 
-const listAverageProcedure = publicProcedure
+const listAverageProcedure = protectedProcedure
   .output(playerStatsOutput)
   .query(({ ctx }) =>
     ctx.prisma.statistic

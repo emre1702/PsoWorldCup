@@ -15,12 +15,13 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "ES2022",
+    "target": "es2020",
     "module": "ES2022",
     "lib": ["ES2022", "dom"],
     "useDefineForClassFields": false,
     "skipLibCheck": true,
-    "types": ["node", "vitest/globals"]
+    "types": ["node", "vitest/globals"],
+    "allowSyntheticDefaultImports": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
@@ -28,8 +29,10 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
+  "exclude": ["./src/server/**/*"],
   "references": [
-    { "path": "tsconfig.app.json" },
-    { "path": "tsconfig.spec.json" }
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.spec.json" },
+    { "path": "./tsconfig.editor.json" }
   ]
 }

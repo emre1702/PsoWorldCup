@@ -14,6 +14,7 @@ import { MatchesService } from '../../services/matches.service';
 import { TeamsService } from '../../services/teams.service';
 import { ArrayReturnType } from '../../types/array-return-type';
 import { AsyncReturnType } from '../../types/async-return-type';
+import { getAuth, getInputWithAuth, injectTRPCClient } from '../../../trpc-client';
 
 @Component({
   selector: 'app-list-matches',
@@ -103,8 +104,7 @@ import { AsyncReturnType } from '../../types/async-return-type';
     </div>`,
 })
 export default class ListMatchesComponent {
-  matchesService = inject(MatchesService);
-  teamsService = inject(TeamsService);
+  trpcClient = injectTRPCClient();
 
   displayedColumns: string[] = [
     'id',
@@ -128,11 +128,11 @@ export default class ListMatchesComponent {
   }
 
   ngOnInit() {
-    this.matchesService.getMatches().subscribe((matches) => {
+    this.trpcClient.matches.list.query(getAuth()).subscribe((matches) => {
       this.dataSource.data = matches;
       this.loading = false;
     });
-    this.teamsService.getTeams().subscribe((teams) => {
+    this.trpcClient.teams.list.query(getAuth()).subscribe((teams) => {
       teams.forEach((team) => {
         if (!team.logo) return;
         this.teamLogoById[team.id] = team.logo;
@@ -171,7 +171,7 @@ export default class ListMatchesComponent {
   deleteMatch(id: number) {
     // with confirm
     if (!confirm('Are you sure you want to delete this match?')) return;
-    this.matchesService.deleteMatch(id).subscribe(() => {
+    this.trpcClient.matches.delete.mutate(getInputWithAuth(id)).subscribe(() => {
       this.dataSource.data = this.dataSource.data.filter(
         (match) => match.id !== id
       );

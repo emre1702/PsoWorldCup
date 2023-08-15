@@ -13,6 +13,7 @@ import { TeamsService } from '../../services/teams.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { RouteMeta } from '@analogjs/router';
+import { getAuth, getInputWithAuth } from '../../../trpc-client';
 
 export const routeMeta: RouteMeta = {
   title: 'Create Player',
@@ -91,15 +92,17 @@ export default class PlayerCreateComponent {
   private readonly playersService = inject(PlayersService);
   private readonly router = inject(Router);
 
-  readonly teams$ = this.teamsService.getTeams();
+  readonly teams$ = this.teamsService.getTeams(getAuth());
 
   createPlayer() {
     const value = this.formGroup.value;
     this.playersService
-      .createPlayer({
-        name: value[this.formFields.name] as string,
-        teamId: value[this.formFields.teamId] as number | null,
-      })
+      .createPlayer(
+        getInputWithAuth({
+          name: value[this.formFields.name] as string,
+          teamId: value[this.formFields.teamId] as number | null,
+        })
+      )
       .subscribe(() => this.router.navigate(['/players']));
   }
 }

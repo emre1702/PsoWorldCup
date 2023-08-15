@@ -11,7 +11,7 @@ import {
   withPreloading,
 } from '@angular/router';
 import { provideContent, withMarkdownRenderer } from '@analogjs/content';
-import { provideTrpcClient } from './trpc-client';
+import { provideTrpcClient } from '../trpc-client';
 
 export const appConfig: ApplicationConfig = {
   providers: [

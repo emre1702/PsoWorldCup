@@ -19,6 +19,7 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { getAuth, getInputWithAuth } from '../../../trpc-client';
 
 @Component({
   selector: 'app-teams-list',
@@ -116,7 +117,7 @@ export default class TeamsListComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.teamsService.getTeams().subscribe((teams) => {
+    this.teamsService.getTeams(getAuth()).subscribe((teams) => {
       this.dataSource.data = teams;
       this.loading = false;
     });
@@ -150,7 +151,7 @@ export default class TeamsListComponent implements OnInit, AfterViewInit {
   }
 
   deleteTeam(id: number) {
-    this.teamsService.deleteTeam(id).subscribe(() => {
+    this.teamsService.deleteTeam(getInputWithAuth(id)).subscribe(() => {
       this.dataSource.data = this.dataSource.data.filter(
         (team) => team.id !== id
       );

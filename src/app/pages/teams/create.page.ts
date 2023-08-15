@@ -14,6 +14,7 @@ import { PlayersService } from '../../services/players.service';
 import { TeamsService } from '../../services/teams.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { getAuth, getInputWithAuth } from '../../../trpc-client';
 
 @Component({
   selector: 'app-teams-create',
@@ -173,19 +174,21 @@ export default class TeamCreateComponent {
   private readonly playersService = inject(PlayersService);
   private readonly router = inject(Router);
 
-  playersWithoutTeam$ = this.playersService.getPlayersWithoutTeam();
+  playersWithoutTeam$ = this.playersService.getPlayersWithoutTeam(getAuth());
 
   createTeam() {
     const value = this.formGroup.value;
     this.teamsService
-      .createTeam({
-        name: value[this.formFields.name] as string,
-        captainId: value[this.formFields.captainId] as number,
-        playerIds: (value[this.formFields.players] as { id: number }[]).map(
-          (p) => p.id
-        ),
-        logo: value[this.formFields.logo] as string,
-      })
+      .createTeam(
+        getInputWithAuth({
+          name: value[this.formFields.name] as string,
+          captainId: value[this.formFields.captainId] as number,
+          playerIds: (value[this.formFields.players] as { id: number }[]).map(
+            (p) => p.id
+          ),
+          logo: value[this.formFields.logo] as string,
+        })
+      )
       .subscribe(() => this.router.navigate(['/teams']));
   }
 
