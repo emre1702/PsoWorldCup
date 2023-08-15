@@ -50,6 +50,12 @@ const authTokenProcedure = publicProcedure
       scope: ['identify'],
       grantType: 'authorization_code',
     });
+    opts.ctx.res.setHeader(
+      'Set-Cookie',
+      `token=${tokenResult.access_token}; HttpOnly; Path=/; Max-Age=${tokenResult.expires_in}; SameSite=Lax`
+    );
+    opts.ctx.res.setHeader('Authentication', tokenResult.access_token);
+    opts.ctx.res.setHeader('X-Discord-Token', tokenResult.access_token);
     return tokenResult;
   });
 

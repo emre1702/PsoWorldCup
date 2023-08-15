@@ -1,18 +1,18 @@
 import { prisma } from './db';
-import { H3Event } from 'h3';
+import { getRequestHeader, H3Event } from 'h3';
 import { createDiscordOAuth2 } from './helpers/discord-oauth2.helpers';
+import { outputAllValuesRecursive } from '../../helpers/object.helpers';
 
 /**
  * Creates context for an incoming request
  * @link https://trpc.io/docs/context
  */
 export const createContext = async (event: H3Event) => {
-  const discordAuthenticationToken = new URLSearchParams(
-    event.node.req.url?.split('?')[1]
-  ).get('token');
-  console.log(event.node.req.url);
+  const discordAuthenticationToken = getRequestHeader(event, 'authorization');
+  const { socket, ...logThis } = event.node.req;
+  outputAllValuesRecursive(logThis);
   const user =
-    discordAuthenticationToken && discordAuthenticationToken !== 'notloggedin'
+    discordAuthenticationToken && discordAuthenticationToken !== 'undefined'
       ? await createDiscordOAuth2().getUser(
           discordAuthenticationToken as string
         )
