@@ -40,6 +40,7 @@ export class PlayersService {
   getPlayers(
     params: RouterInputs['players']['listAll']
   ): Observable<RouterOutputs['players']['listAll']> {
+    console.log('get players', params);
     return this.trpcClient.players.listAll.query(params);
   }
 }

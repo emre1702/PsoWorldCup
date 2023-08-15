@@ -1,6 +1,5 @@
 import { z } from 'zod';
-import { router } from '../trpc';
-import { protectedProcedure, protectedInputProcedure } from '../helpers/discord-oauth2.helpers';
+import { protectedInputProcedure, protectedProcedure, router } from '../trpc';
 
 const detailProcedure = protectedInputProcedure(z.number())
   .output(
@@ -96,11 +95,11 @@ const listByTeamProcedure = protectedInputProcedure(z.number())
   );
 
 const createProcedure = protectedInputProcedure(
-    z.object({
-      name: z.string(),
-      teamId: z.number().nullable(),
-    })
-  )
+  z.object({
+    name: z.string(),
+    teamId: z.number().nullable(),
+  })
+)
   .output(z.number())
   .mutation(
     async ({ input: { input }, ctx }) =>
@@ -113,24 +112,24 @@ const createProcedure = protectedInputProcedure(
   );
 
 const updateProcedure = protectedInputProcedure(
-    z.object({
-      id: z.number(),
-      name: z.string(),
-      teamId: z.number().nullable(),
+  z.object({
+    id: z.number(),
+    name: z.string(),
+    teamId: z.number().nullable(),
+  })
+).mutation(
+  async ({ input: { input }, ctx }) =>
+    await ctx.prisma.player.update({
+      where: { id: input.id },
+      data: { name: input.name, teamId: input.teamId },
     })
-  )
-  .mutation(
-    async ({ input: { input }, ctx }) =>
-      await ctx.prisma.player.update({
-        where: { id: input.id },
-        data: { name: input.name, teamId: input.teamId },
-      })
-  );
+);
 
-const deleteProcedure = protectedInputProcedure(z.number())
-  .mutation(async ({ input: { input }, ctx }) => {
+const deleteProcedure = protectedInputProcedure(z.number()).mutation(
+  async ({ input: { input }, ctx }) => {
     await ctx.prisma.player.delete({ where: { id: input } });
-  });
+  }
+);
 
 export const playersRouter = router({
   detail: detailProcedure,

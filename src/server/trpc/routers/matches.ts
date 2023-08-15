@@ -1,7 +1,5 @@
 import { z } from 'zod';
-import { router } from '../trpc';
-import { protectedInputProcedure, protectedProcedure } from '../helpers/discord-oauth2.helpers';
-
+import { protectedInputProcedure, protectedProcedure, router } from '../trpc';
 
 const detailProcedure = protectedInputProcedure(z.number())
   .output(
@@ -67,30 +65,30 @@ const listProcedure = protectedProcedure
   );
 
 const createProcedure = protectedInputProcedure(
-    z.object({
-      date: z.date(),
-      round: z.number(),
-      team1Id: z.number(),
-      team2Id: z.number(),
-      team1Score: z.number(),
-      team2Score: z.number(),
-      statistics: z.array(
-        z.object({
-          playerId: z.number(),
-          teamId: z.number(),
-          score: z.number(),
-          goals: z.number(),
-          assists: z.number(),
-          catches: z.number(),
-          interceptions: z.number(),
-          tackles: z.number(),
-          passes: z.number(),
-          saves: z.number(),
-          shots: z.number(),
-        })
-      ),
-    })
-  )
+  z.object({
+    date: z.date(),
+    round: z.number(),
+    team1Id: z.number(),
+    team2Id: z.number(),
+    team1Score: z.number(),
+    team2Score: z.number(),
+    statistics: z.array(
+      z.object({
+        playerId: z.number(),
+        teamId: z.number(),
+        score: z.number(),
+        goals: z.number(),
+        assists: z.number(),
+        catches: z.number(),
+        interceptions: z.number(),
+        tackles: z.number(),
+        passes: z.number(),
+        saves: z.number(),
+        shots: z.number(),
+      })
+    ),
+  })
+)
   .output(z.number())
   .mutation(
     async ({ input: { input }, ctx }) =>
@@ -125,32 +123,33 @@ const createProcedure = protectedInputProcedure(
   );
 
 const updateProcedure = protectedInputProcedure(
-    z.object({
-      id: z.number(),
-      date: z.date(),
-      team1Id: z.number(),
-      team2Id: z.number(),
-      team1Score: z.number(),
-      team2Score: z.number(),
-    }))
-  .mutation(
-    async ({ input: { input }, ctx }) =>
-      await ctx.prisma.match.update({
-        where: { id: input.id },
-        data: {
-          team1: { connect: { id: input.team1Id } },
-          team2: { connect: { id: input.team2Id } },
-          date: input.date,
-          scoreTeam1: input.team1Score,
-          scoreTeam2: input.team2Score,
-        },
-      })
-  );
+  z.object({
+    id: z.number(),
+    date: z.date(),
+    team1Id: z.number(),
+    team2Id: z.number(),
+    team1Score: z.number(),
+    team2Score: z.number(),
+  })
+).mutation(
+  async ({ input: { input }, ctx }) =>
+    await ctx.prisma.match.update({
+      where: { id: input.id },
+      data: {
+        team1: { connect: { id: input.team1Id } },
+        team2: { connect: { id: input.team2Id } },
+        date: input.date,
+        scoreTeam1: input.team1Score,
+        scoreTeam2: input.team2Score,
+      },
+    })
+);
 
-const deleteProcedure = protectedInputProcedure(z.number())
-  .mutation(async ({ input: { input }, ctx }) => {
+const deleteProcedure = protectedInputProcedure(z.number()).mutation(
+  async ({ input: { input }, ctx }) => {
     await ctx.prisma.match.delete({ where: { id: input } });
-  });
+  }
+);
 
 export const matchesRouter = router({
   detail: detailProcedure,
