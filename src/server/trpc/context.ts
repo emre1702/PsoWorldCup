@@ -12,7 +12,7 @@ export const createContext = async (event: H3Event) => {
   ).get('token');
   console.log(event.node.req.url);
   const user =
-    discordAuthenticationToken && discordAuthenticationToken !== 'undefined'
+    discordAuthenticationToken && discordAuthenticationToken !== 'notloggedin'
       ? await createDiscordOAuth2().getUser(
           discordAuthenticationToken as string
         )
