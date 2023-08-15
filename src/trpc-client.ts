@@ -61,6 +61,12 @@ export const { provideTrpcClient, TrpcClient, TrpcHeaders } = createTrpcClient<A
             Authorization: localStorage.getItem('discord-token') ?? undefined,
           };
         },
+        fetch(url, options) {
+          return fetch(url, {
+            ...options,
+            credentials: 'include',
+          });
+        }
       }),
     ],
   },
