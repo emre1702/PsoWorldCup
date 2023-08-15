@@ -23,7 +23,9 @@ const unauthorizedHandlerLink: TRPCLink<AppRouter> = () => {
   return ({ next, op }) => {
     return observable((observer) => {
       // Add discord-token from localstorage to url as query param
+      console.log(op);
       op.path = `${op.path}?token=${localStorage.getItem('discord-token') ?? 'notloggedin'}`;
+      
       const subscription = next(op).subscribe({
         next: (result) => {
           console.log(result);
