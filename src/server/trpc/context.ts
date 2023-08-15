@@ -10,6 +10,7 @@ import { outputAllValuesRecursive } from '../../helpers/object.helpers';
 export const createContext = async (event: H3Event) => {
   const discordAuthenticationToken = getRequestHeader(event, 'authorization');
   outputAllValuesRecursive(event.node.req.headers);
+  outputAllValuesRecursive(event.req.headers);
   console.log(discordAuthenticationToken);
   const user =
     discordAuthenticationToken && discordAuthenticationToken !== 'undefined'
