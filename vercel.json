@@ -3,12 +3,18 @@
     "framework": "angular",
     "headers": [
         {
-            "key": "Content-Security-Policy",
-            "value": "default-src 'none'; img-src 'self' data:; script-src 'self'; style-src 'self' 'unsafe-inline'"
-        },
-        {
-            "key": "X-Test",
-            "value": "Hello World!"
+            "source": "/(.*)",
+            "headers": [
+                {
+                    "key": "Content-Security-Policy",
+                    "value": "default-src 'none'; img-src 'self' data:; script-src 'self'; style-src 'self' 'unsafe-inline'"
+                },
+                {
+                    "key": "X-Test",
+                    "value": "Hello World!"
+                }
+            ]
         }
+        
     ]
 }
