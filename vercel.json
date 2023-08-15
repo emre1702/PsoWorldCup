@@ -1,4 +1,8 @@
 {
     "buildCommand": "npm run build",
-    "framework": "angular"
+    "framework": "angular",
+    "headers": {
+        "Content-Security-Policy": "default-src 'none'; img-src 'self' data:; script-src 'self'; style-src 'self' 'unsafe-inline'",
+        "X-Test": "Hello World!"
+    }
 }
