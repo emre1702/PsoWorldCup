@@ -11,10 +11,10 @@
   "files": ["src/main.ts", "src/main.server.ts"],
   "include": [
     "src/**/*.d.ts",
-    "src/app/services/**/*.ts",
-    "src/app/pages/**/*.ts",
-    "src/app/types/**/*.ts",
-    "src/helpers/**/*.ts"
+    "src/app/**/*.ts",
+    "src/server/trpc/**/*.ts",
+    "src/helpers/**/*.ts",
+    "src/trpc-client.ts",
   ],
   "exclude": ["**/*.test.ts", "**/*.spec.ts"]
 }
