@@ -1,3 +1,6 @@
-import { defineEventHandler } from 'h3';
+import { defineEventHandler, getRequestHeaders } from 'h3';
 
-export default defineEventHandler(() => ({ message: 'Hello World' }));
+export default defineEventHandler((ctx) => {
+    console.log(getRequestHeaders(ctx));
+    return "test";
+});

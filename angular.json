@@ -15,7 +15,7 @@
             "configFile": "vite.config.ts",
             "main": "src/main.ts",
             "outputPath": "dist/client",
-            "tsConfig": "tsconfig.app.json"
+            "tsConfig": "tsconfig.app.json"            
           },
           "defaultConfiguration": "production",
           "configurations": {
@@ -30,6 +30,23 @@
         },
         "serve": {
           "builder": "@nx/vite:dev-server",
+          "defaultConfiguration": "development",
+          "options": {
+            "buildTarget": "my-app:build",
+            "port": 5173
+          },
+          "configurations": {
+            "development": {
+              "buildTarget": "my-app:build:development",
+              "hmr": true
+            },
+            "production": {
+              "buildTarget": "my-app:build:production"
+            }
+          }
+        },
+        "preview": {
+          "builder": "@nx/vite:preview-server",
           "defaultConfiguration": "development",
           "options": {
             "buildTarget": "my-app:build",

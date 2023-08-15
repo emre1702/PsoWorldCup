@@ -81,6 +81,11 @@ export default class DiscordCallbackPage implements OnInit {
     localStorage.setItem('discord-token', authToken.access_token);
     localStorage.setItem('discord-refresh-token', authToken.refresh_token);
     localStorage.removeItem('discord-state');
+    fetch('/api/v1/hello', {
+      headers: {
+        Authorization: `${authToken.access_token}`,
+      }
+    });
     return authToken.access_token;
   }
 
