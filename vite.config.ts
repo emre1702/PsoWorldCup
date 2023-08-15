@@ -22,15 +22,13 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     analog({
+      ssr: false,
       vite: {
         inlineStylesExtension: 'scss',
       },
       nitro: {
         preset: 'vercel',
         serveStatic: false,
-      },
-      prerender: {
-        routes: ['/'],
       },
     }),
     tsConfigPaths({
