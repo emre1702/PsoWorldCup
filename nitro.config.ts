@@ -1,5 +1,14 @@
 export default defineNitroConfig({
     routeRules: {
-        '/**': { cors: false, headers: { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS', 'access-control-allow-headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization' } }
+        '/**': { 
+                cors: true, 
+                headers: { 
+                    "Access-Control-Allow-Methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+                    "Access-Control-Allow-Origin": "*",
+                    'Access-Control-Allow-Credentials': 'true',
+                    "Access-Control-Allow-Headers": '*',
+                    "Access-Control-Expose-Headers": '*'
+                } 
+            },
     }
   });
