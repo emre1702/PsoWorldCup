@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     analog({
-      ssr: false,
+      ssr: true,
       vite: {
         inlineStylesExtension: 'scss',
       },
@@ -30,6 +30,7 @@ export default defineConfig(({ mode }) => ({
         preset: 'vercel',
         serveStatic: false,
       },
+
     }),
     tsConfigPaths({
       root: './'
