@@ -1,5 +1,6 @@
 import ArrayHelpers from '../../../helpers/array.helpers';
-import { protectedProcedure, router } from '../trpc';
+import { protectedProcedure, protectedInputProcedure } from '../helpers/discord-oauth2.helpers';
+import { router } from '../trpc';
 import { z } from 'zod';
 
 const playerStatsOutput = z.array(

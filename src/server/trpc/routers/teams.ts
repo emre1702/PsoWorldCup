@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { protectedProcedure, router } from '../trpc';
+import { publicProcedure, router } from '../trpc';
+import { protectedInputProcedure, protectedProcedure } from '../helpers/discord-oauth2.helpers';
 
-const detailProcedure = protectedProcedure
-  .input(z.number())
+const detailProcedure = protectedInputProcedure(z.number())
   .output(
     z
       .object({
@@ -16,7 +16,7 @@ const detailProcedure = protectedProcedure
       })
       .nullable()
   )
-  .query(({ input, ctx }) =>
+  .query(({ input: { input }, ctx }) =>
     ctx.prisma.team
       .findUnique({
         where: { id: input },
@@ -68,8 +68,7 @@ const listProcedure = protectedProcedure
       .then((e) => e.map((e) => ({ ...e, captain: e.captain?.name })))
   );
 
-const createProcedure = protectedProcedure
-  .input(
+const createProcedure = protectedInputProcedure(
     z.object({
       name: z.string(),
       captainId: z.number(),
@@ -79,7 +78,7 @@ const createProcedure = protectedProcedure
   )
   .output(z.number())
   .mutation(
-    async ({ input, ctx }) =>
+    async ({ input: { input }, ctx }) =>
       await ctx.prisma.team
         .create({
           data: {
@@ -93,8 +92,7 @@ const createProcedure = protectedProcedure
         .then((e) => e.id)
   );
 
-const updateProcedure = protectedProcedure
-  .input(
+const updateProcedure = protectedInputProcedure(
     z.object({
       id: z.number(),
       name: z.string(),
@@ -104,7 +102,7 @@ const updateProcedure = protectedProcedure
     })
   )
   .mutation(
-    async ({ input, ctx }) =>
+    async ({ input: { input }, ctx }) =>
       await ctx.prisma.team.update({
         where: { id: input.id },
         data: {
@@ -116,9 +114,8 @@ const updateProcedure = protectedProcedure
       })
   );
 
-const deleteProcedure = protectedProcedure
-  .input(z.number())
-  .mutation(async ({ input, ctx }) => {
+const deleteProcedure = protectedInputProcedure(z.number())
+  .mutation(async ({ input: { input }, ctx }) => {
     await ctx.prisma.team.delete({ where: { id: input } });
   });
 

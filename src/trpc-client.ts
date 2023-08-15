@@ -61,3 +61,16 @@ export const { provideTrpcClient, TrpcClient, TrpcHeaders } = createTrpcClient<A
 export function injectTRPCClient() {
   return inject(TrpcClient);
 }
+
+export function getAuth(): { token: string } {
+  return {
+    token: (typeof localStorage !== 'undefined' ? localStorage.getItem('discord-token') : undefined) ?? '-',
+  };
+}
+
+export function getInputWithAuth<T>(input: T): { input: T, token: string } {
+  return {
+    input,
+    token: (typeof localStorage !== 'undefined' ? localStorage.getItem('discord-token') : undefined) ?? '-',
+  };
+}

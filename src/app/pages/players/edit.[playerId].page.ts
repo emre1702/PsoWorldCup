@@ -14,6 +14,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TeamsService } from '../../../app/services/teams.service';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
+import { getAuth, getInputWithAuth } from '../../../trpc-client';
 
 @Component({
   selector: 'app-players-edit',
@@ -93,31 +94,35 @@ export default class PlayerEditPage implements OnInit {
     ]),
     [this.formFields.teamId]: new FormControl<number | null>(null),
   });
-  teams$ = this.teamsService.getTeams();
+  teams$ = this.teamsService.getTeams(getAuth());
   loading = true;
 
   ngOnInit(): void {
     const playerIdNumber = Number(this.playerId);
     if (isNaN(playerIdNumber)) return;
-    this.playersService.getPlayer(playerIdNumber).subscribe((player) => {
-      this.loading = false;
-      if (!player) return;
-      this.formGroup.setValue({
-        [this.formFields.name]: player.name,
-        [this.formFields.teamId]: player.teamId,
+    this.playersService
+      .getPlayer(getInputWithAuth(playerIdNumber))
+      .subscribe((player) => {
+        this.loading = false;
+        if (!player) return;
+        this.formGroup.setValue({
+          [this.formFields.name]: player.name,
+          [this.formFields.teamId]: player.teamId,
+        });
       });
-    });
   }
 
   updatePlayer() {
     const playerIdNumber = Number(this.playerId);
     if (isNaN(playerIdNumber)) return;
     this.playersService
-      .updatePlayer({
-        name: this.formGroup.value[this.formFields.name] as string,
-        teamId: this.formGroup.value[this.formFields.teamId] as number,
-        id: playerIdNumber,
-      })
+      .updatePlayer(
+        getInputWithAuth({
+          name: this.formGroup.value[this.formFields.name] as string,
+          teamId: this.formGroup.value[this.formFields.teamId] as number,
+          id: playerIdNumber,
+        })
+      )
       .subscribe(() => this.router.navigate(['/players']));
   }
 }

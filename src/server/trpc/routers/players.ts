@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { protectedProcedure, router } from '../trpc';
+import { router } from '../trpc';
+import { protectedProcedure, protectedInputProcedure } from '../helpers/discord-oauth2.helpers';
 
-const detailProcedure = protectedProcedure
-  .input(z.number())
+const detailProcedure = protectedInputProcedure(z.number())
   .output(
     z
       .object({
@@ -15,7 +15,7 @@ const detailProcedure = protectedProcedure
       })
       .nullable()
   )
-  .query(({ input, ctx }) =>
+  .query(({ input: { input }, ctx }) =>
     ctx.prisma.player
       .findUnique({
         where: { id: input },
@@ -75,8 +75,7 @@ const listAllProcedure = protectedProcedure
       .then((e) => e.map((e) => ({ ...e, isCaptain: !!e.captainOf })))
   );
 
-const listByTeamProcedure = protectedProcedure
-  .input(z.number())
+const listByTeamProcedure = protectedInputProcedure(z.number())
   .output(
     z.array(
       z.object({
@@ -85,7 +84,7 @@ const listByTeamProcedure = protectedProcedure
       })
     )
   )
-  .query(({ ctx, input }) =>
+  .query(({ ctx, input: { input } }) =>
     ctx.prisma.player.findMany({
       select: {
         id: true,
@@ -96,8 +95,7 @@ const listByTeamProcedure = protectedProcedure
     })
   );
 
-const createProcedure = protectedProcedure
-  .input(
+const createProcedure = protectedInputProcedure(
     z.object({
       name: z.string(),
       teamId: z.number().nullable(),
@@ -105,7 +103,7 @@ const createProcedure = protectedProcedure
   )
   .output(z.number())
   .mutation(
-    async ({ input, ctx }) =>
+    async ({ input: { input }, ctx }) =>
       await ctx.prisma.player
         .create({
           data: { name: input.name, teamId: input.teamId },
@@ -114,8 +112,7 @@ const createProcedure = protectedProcedure
         .then((e) => e.id)
   );
 
-const updateProcedure = protectedProcedure
-  .input(
+const updateProcedure = protectedInputProcedure(
     z.object({
       id: z.number(),
       name: z.string(),
@@ -123,16 +120,15 @@ const updateProcedure = protectedProcedure
     })
   )
   .mutation(
-    async ({ input, ctx }) =>
+    async ({ input: { input }, ctx }) =>
       await ctx.prisma.player.update({
         where: { id: input.id },
         data: { name: input.name, teamId: input.teamId },
       })
   );
 
-const deleteProcedure = protectedProcedure
-  .input(z.number())
-  .mutation(async ({ input, ctx }) => {
+const deleteProcedure = protectedInputProcedure(z.number())
+  .mutation(async ({ input: { input }, ctx }) => {
     await ctx.prisma.player.delete({ where: { id: input } });
   });
 

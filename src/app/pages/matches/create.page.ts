@@ -19,7 +19,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { RouteMeta } from '@analogjs/router';
-import { injectTRPCClient } from '../../../trpc-client';
+import { getAuth, getInputWithAuth, injectTRPCClient } from '../../../trpc-client';
 import {
   MatTable,
   MatTableDataSource,
@@ -316,7 +316,7 @@ export default class PlayerCreateComponent implements OnInit {
   @ViewChildren(MatTable) tables?: QueryList<MatTable<any>>;
 
   ngOnInit(): void {
-    this.trpcClient.teams.list.query().subscribe((e) => {
+    this.trpcClient.teams.list.query(getAuth()).subscribe((e) => {
       this.teams = e;
     });
     merge(
@@ -335,9 +335,8 @@ export default class PlayerCreateComponent implements OnInit {
 
   createMatch() {
     const value = this.formGroup.value;
-    console.log(value);
     this.trpcClient.matches.create
-      .mutate({
+      .mutate(getInputWithAuth({
         date: value[this.formFields.date] as Date,
         round: value[this.formFields.round] as number,
         team1Id: value[this.formFields.team1Id] as number,
@@ -360,7 +359,7 @@ export default class PlayerCreateComponent implements OnInit {
               teamId: e.teamId as number,
             }))
         ),
-      })
+      }))
       .subscribe(() => this.router.navigate(['/matches']));
   }
 
@@ -377,7 +376,7 @@ export default class PlayerCreateComponent implements OnInit {
         statsFormArray.removeAt(statsFormArray.controls.indexOf(e));
       }
     });
-    this.trpcClient.players.listByTeam.query(teamId).subscribe((e) => {
+    this.trpcClient.players.listByTeam.query(getInputWithAuth(teamId)).subscribe((e) => {
       this.playersOfTeam[teamIndex] = e;
     });
 

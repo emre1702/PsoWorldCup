@@ -1,8 +1,9 @@
 import { z } from 'zod';
-import { protectedProcedure, router } from '../trpc';
+import { router } from '../trpc';
+import { protectedInputProcedure, protectedProcedure } from '../helpers/discord-oauth2.helpers';
 
-const detailProcedure = protectedProcedure
-  .input(z.number())
+
+const detailProcedure = protectedInputProcedure(z.number())
   .output(
     z
       .object({
@@ -17,7 +18,7 @@ const detailProcedure = protectedProcedure
   )
   .query(({ input, ctx }) =>
     ctx.prisma.match.findUnique({
-      where: { id: input },
+      where: { id: input.input },
       select: {
         id: true,
         date: true,
@@ -65,8 +66,7 @@ const listProcedure = protectedProcedure
       )
   );
 
-const createProcedure = protectedProcedure
-  .input(
+const createProcedure = protectedInputProcedure(
     z.object({
       date: z.date(),
       round: z.number(),
@@ -93,7 +93,7 @@ const createProcedure = protectedProcedure
   )
   .output(z.number())
   .mutation(
-    async ({ input, ctx }) =>
+    async ({ input: { input }, ctx }) =>
       await ctx.prisma.match
         .create({
           data: {
@@ -124,8 +124,7 @@ const createProcedure = protectedProcedure
         .then((e) => e.id)
   );
 
-const updateProcedure = protectedProcedure
-  .input(
+const updateProcedure = protectedInputProcedure(
     z.object({
       id: z.number(),
       date: z.date(),
@@ -133,10 +132,9 @@ const updateProcedure = protectedProcedure
       team2Id: z.number(),
       team1Score: z.number(),
       team2Score: z.number(),
-    })
-  )
+    }))
   .mutation(
-    async ({ input, ctx }) =>
+    async ({ input: { input }, ctx }) =>
       await ctx.prisma.match.update({
         where: { id: input.id },
         data: {
@@ -149,9 +147,8 @@ const updateProcedure = protectedProcedure
       })
   );
 
-const deleteProcedure = protectedProcedure
-  .input(z.number())
-  .mutation(async ({ input, ctx }) => {
+const deleteProcedure = protectedInputProcedure(z.number())
+  .mutation(async ({ input: { input }, ctx }) => {
     await ctx.prisma.match.delete({ where: { id: input } });
   });
 

@@ -16,7 +16,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TeamsService } from '../../services/teams.service';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
-import { TrpcClient } from '../../../trpc-client';
+import { TrpcClient, getAuth, getInputWithAuth } from '../../../trpc-client';
 
 @Component({
   selector: 'app-team-edit',
@@ -186,49 +186,55 @@ export default class TeamEditPage implements OnInit {
     ),
   });
   players: { id: number; name: string }[] = [];
-  teams$ = this.trpcClient.teams.list.query();
+  teams$ = this.trpcClient.teams.list.query(getAuth());
   fileTooLarge = false;
   loading = true;
 
   ngOnInit(): void {
     const teamIdNumber = Number(this.teamId);
     if (isNaN(teamIdNumber)) return;
-    this.trpcClient.teams.detail.query(teamIdNumber).subscribe(async (team) => {
-      this.loading = false;
-      if (!team) return;
+    this.trpcClient.teams.detail
+      .query(getInputWithAuth(teamIdNumber))
+      .subscribe(async (team) => {
+        this.loading = false;
+        if (!team) return;
 
-      this.formGroup.setValue({
-        [this.formFields.name]: team.name,
-        [this.formFields.logo]: team.logo,
-        [this.formFields.captain]: team.captain,
-        [this.formFields.players]: team.players,
+        this.formGroup.setValue({
+          [this.formFields.name]: team.name,
+          [this.formFields.logo]: team.logo,
+          [this.formFields.captain]: team.captain,
+          [this.formFields.players]: team.players,
+        });
       });
-    });
-    this.trpcClient.players.listWithoutTeam.query().subscribe((e) => {
+    this.trpcClient.players.listWithoutTeam.query(getAuth()).subscribe((e) => {
       this.players.push(...e);
     });
-    this.trpcClient.players.listByTeam.query(teamIdNumber).subscribe((e) => {
-      this.formGroup.get(this.formFields.players)?.setValue(e);
-      this.players.push(...e);
-    });
+    this.trpcClient.players.listByTeam
+      .query(getInputWithAuth(teamIdNumber))
+      .subscribe((e) => {
+        this.formGroup.get(this.formFields.players)?.setValue(e);
+        this.players.push(...e);
+      });
   }
 
   updateTeam() {
     const teamIdNumber = Number(this.teamId);
     if (isNaN(teamIdNumber)) return;
     this.trpcClient.teams.update
-      .mutate({
-        name: this.formGroup.value[this.formFields.name] as string,
-        logo: this.formGroup.value[this.formFields.logo] as string,
-        captainId: this.formGroup.value[this.formFields.captain] as
-          | number
-          | null,
-        playerIds: (
-          this.formGroup.value[this.formFields.players] as { id: number }[]
-        ).map((e) => e.id),
+      .mutate(
+        getInputWithAuth({
+          name: this.formGroup.value[this.formFields.name] as string,
+          logo: this.formGroup.value[this.formFields.logo] as string,
+          captainId: this.formGroup.value[this.formFields.captain] as
+            | number
+            | null,
+          playerIds: (
+            this.formGroup.value[this.formFields.players] as { id: number }[]
+          ).map((e) => e.id),
 
-        id: teamIdNumber,
-      })
+          id: teamIdNumber,
+        })
+      )
       .subscribe(() => this.router.navigate(['/teams']));
   }
 
