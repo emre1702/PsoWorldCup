@@ -58,16 +58,8 @@ export const { provideTrpcClient, TrpcClient, TrpcHeaders } = createTrpcClient<A
         url: `${getBaseUrl()}/api/trpc`,
         headers() {
           return {
-            Authorization: localStorage.getItem('discord-token') ?? undefined,
-            "X-Discord-State": localStorage.getItem('discord-state') ?? "undefined",
-            "X-Test": "test 2"
+            Authorization: localStorage.getItem('discord-token') ?? 'undefined',
           };
-        },
-        fetch(url, options) {
-          return fetch(url, {
-            ...options,
-            credentials: 'include',
-          });
         }
       }),
     ],

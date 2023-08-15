@@ -1,16 +1,4 @@
 {
     "buildCommand": "npm run build",
-    "framework": "angular",
-    "headers": [
-        {
-            "source": "/(.*)",
-            "headers": [
-                {
-                    "key": "X-Test",
-                    "value": "Hello World!"
-                }
-            ]
-        }
-        
-    ]
+    "framework": "angular"
 }
