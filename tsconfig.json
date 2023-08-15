@@ -29,7 +29,6 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
-  "include": ["**/*.ts"],
   "exclude": ["./src/server/**/*"],
   "references": [
     { "path": "./tsconfig.app.json" },
