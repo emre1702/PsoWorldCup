@@ -1,6 +1,6 @@
 import { prisma } from './db';
 import { H3Event } from 'h3';
-import { User } from 'discord-oauth2';
+import { permission, user } from '@prisma/client';
 
 /**
  * Creates context for an incoming request
@@ -11,6 +11,6 @@ export const createContext = async (event: H3Event) => {
     prisma,
     req: event.node.req,
     res: event.node.res,
-    user: undefined as User | undefined,
+    user: null as (user & { permissions: permission[] }) | null,
   };
 };

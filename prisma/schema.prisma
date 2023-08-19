@@ -15,15 +15,14 @@ datasource db {
 }
 
 model user {
-  id         Int      @id @default(autoincrement())
-  email      String   @unique
-  name       String?
-  password   String
-  superAdmin Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  discordId String   @unique
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   permissions permission[]
+  logs        log[]
 }
 
 enum Permission {
@@ -109,4 +108,13 @@ model statistic {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model log {
+  id     Int    @id @default(autoincrement())
+  user   user   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  userId Int
+  input  String @default("")
+  type   String @default("")
+  path   String @default("")
 }
