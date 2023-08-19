@@ -42,7 +42,7 @@ const detailProcedure = protectedInputProcedure(z.number())
       )
   );
 
-const listProcedure = protectedProcedure
+const listProcedure = protectedProcedure()
   .output(
     z.array(
       z.object({

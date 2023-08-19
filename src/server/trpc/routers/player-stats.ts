@@ -19,7 +19,7 @@ const playerStatsOutput = z.array(
   })
 );
 
-const listSumProcedure = protectedProcedure
+const listSumProcedure = protectedProcedure()
   .output(playerStatsOutput)
   .query(({ ctx }) =>
     ctx.prisma.statistic
@@ -62,7 +62,7 @@ const listSumProcedure = protectedProcedure
       )
   );
 
-const listAverageProcedure = protectedProcedure
+const listAverageProcedure = protectedProcedure()
   .output(playerStatsOutput)
   .query(({ ctx }) =>
     ctx.prisma.statistic

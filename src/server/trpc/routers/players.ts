@@ -30,7 +30,7 @@ const detailProcedure = protectedInputProcedure(z.number())
       .then((e) => (e ? { ...e, isCaptain: !!e.captainOf } : e))
   );
 
-const listWithoutTeamProcedure = protectedProcedure
+const listWithoutTeamProcedure = protectedProcedure()
   .output(
     z.array(
       z.object({
@@ -50,7 +50,7 @@ const listWithoutTeamProcedure = protectedProcedure
     })
   );
 
-const listAllProcedure = protectedProcedure
+const listAllProcedure = protectedProcedure()
   .output(
     z.array(
       z.object({
