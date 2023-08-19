@@ -98,7 +98,8 @@ const createProcedure = protectedInputProcedure(
   z.object({
     name: z.string(),
     teamId: z.number().nullable(),
-  })
+  }),
+  'CREATE_PLAYER'
 )
   .output(z.number())
   .mutation(
@@ -116,7 +117,8 @@ const updateProcedure = protectedInputProcedure(
     id: z.number(),
     name: z.string(),
     teamId: z.number().nullable(),
-  })
+  }),
+  'UPDATE_PLAYER'
 ).mutation(
   async ({ input: { input }, ctx }) =>
     await ctx.prisma.player.update({
@@ -125,11 +127,12 @@ const updateProcedure = protectedInputProcedure(
     })
 );
 
-const deleteProcedure = protectedInputProcedure(z.number()).mutation(
-  async ({ input: { input }, ctx }) => {
-    await ctx.prisma.player.delete({ where: { id: input } });
-  }
-);
+const deleteProcedure = protectedInputProcedure(
+  z.number(),
+  'DELETE_PLAYER'
+).mutation(async ({ input: { input }, ctx }) => {
+  await ctx.prisma.player.delete({ where: { id: input } });
+});
 
 export const playersRouter = router({
   detail: detailProcedure,

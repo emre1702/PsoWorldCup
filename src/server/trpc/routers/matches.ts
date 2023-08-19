@@ -87,7 +87,8 @@ const createProcedure = protectedInputProcedure(
         shots: z.number(),
       })
     ),
-  })
+  }),
+  'CREATE_MATCH'
 )
   .output(z.number())
   .mutation(
@@ -130,7 +131,8 @@ const updateProcedure = protectedInputProcedure(
     team2Id: z.number(),
     team1Score: z.number(),
     team2Score: z.number(),
-  })
+  }),
+  'UPDATE_MATCH'
 ).mutation(
   async ({ input: { input }, ctx }) =>
     await ctx.prisma.match.update({
@@ -145,11 +147,12 @@ const updateProcedure = protectedInputProcedure(
     })
 );
 
-const deleteProcedure = protectedInputProcedure(z.number()).mutation(
-  async ({ input: { input }, ctx }) => {
-    await ctx.prisma.match.delete({ where: { id: input } });
-  }
-);
+const deleteProcedure = protectedInputProcedure(
+  z.number(),
+  'DELETE_MATCH'
+).mutation(async ({ input: { input }, ctx }) => {
+  await ctx.prisma.match.delete({ where: { id: input } });
+});
 
 export const matchesRouter = router({
   detail: detailProcedure,

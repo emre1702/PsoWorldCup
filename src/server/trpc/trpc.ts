@@ -35,7 +35,10 @@ const oauth = createDiscordOAuth2();
 const authorizationMiddleware =
   (neededPermission?: Permission) =>
   async (opts: {
-    ctx: { user: user | null; prisma: PrismaClient };
+    ctx: {
+      user: (user & { permissions: permission[] }) | null;
+      prisma: PrismaClient;
+    };
     type: ProcedureType;
     path: string;
     input: { token?: string };
@@ -56,6 +59,16 @@ const authorizationMiddleware =
     }
 
     if (!opts.ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+
+    if (
+      neededPermission &&
+      !opts.ctx.user.permissions.map((e) => e.name).includes(neededPermission)
+    ) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: `Missing permission ${neededPermission}`,
+      });
+    }
 
     if (opts.type === 'mutation') {
       await opts.ctx.prisma.log.create({
