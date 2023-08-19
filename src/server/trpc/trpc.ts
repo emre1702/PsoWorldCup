@@ -11,7 +11,13 @@ import {
   zodInputWithAuth,
 } from './helpers/discord-oauth2.helpers';
 import { ZodTypeAny, z } from 'zod';
-import { PrismaClient, permission, user } from '@prisma/client';
+import {
+  Permission,
+  PrismaClient,
+  permission,
+  user,
+  LogType,
+} from '@prisma/client';
 
 const t = initTRPC
   .context<inferAsyncReturnType<typeof createContext>>()
@@ -26,41 +32,44 @@ export const router = t.router;
 export const middleware = t.middleware;
 
 const oauth = createDiscordOAuth2();
-async function authorizationMiddleware(opts: {
-  ctx: { user: user | null; prisma: PrismaClient };
-  type: ProcedureType;
-  path: string;
-  input: { token?: string };
-  next: (opts: { ctx: any }) => Promise<any>;
-}) {
-  const { token } = opts.input;
-  if (!token || token === '-') throw new TRPCError({ code: 'UNAUTHORIZED' });
+const authorizationMiddleware =
+  (neededPermission?: Permission) =>
+  async (opts: {
+    ctx: { user: user | null; prisma: PrismaClient };
+    type: ProcedureType;
+    path: string;
+    input: { token?: string };
+    next: (opts: { ctx: any }) => Promise<any>;
+  }) => {
+    const { token } = opts.input;
+    if (!token || token === '-') throw new TRPCError({ code: 'UNAUTHORIZED' });
 
-  try {
-    opts.ctx.user = await getUser(token, opts.ctx.prisma);
-  } catch (e) {
-    throw new TRPCError({
-      code: 'UNAUTHORIZED',
-      message: (typeof e === 'object' && e && 'message' in e
-        ? e.message
-        : e) as string,
-    });
-  }
+    try {
+      opts.ctx.user = await getUser(token, opts.ctx.prisma);
+    } catch (e) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: (typeof e === 'object' && e && 'message' in e
+          ? e.message
+          : e) as string,
+      });
+    }
 
-  if (!opts.ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+    if (!opts.ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
 
-  // Log the action of the user
-  await opts.ctx.prisma.log.create({
-    data: {
-      user: { connect: { id: opts.ctx.user.id } },
-      input: JSON.stringify(opts.input),
-      type: opts.type,
-      path: opts.path,
-    },
-  });
+    if (opts.type === 'mutation') {
+      await opts.ctx.prisma.log.create({
+        data: {
+          user: { connect: { id: opts.ctx.user.id } },
+          input: JSON.stringify(opts.input),
+          type: LogType.MUTATION,
+          path: opts.path,
+        },
+      });
+    }
 
-  return opts.next(opts);
-}
+    return opts.next(opts);
+  };
 
 async function getUser(
   token: string,
@@ -85,9 +94,15 @@ async function getUser(
   return user!;
 }
 
-export const protectedInputProcedure = <T extends ZodTypeAny>(input: T) =>
-  publicProcedure.input(zodInputWithAuth(input)).use(authorizationMiddleware);
+export const protectedInputProcedure = <T extends ZodTypeAny>(
+  input: T,
+  neededPermission?: Permission
+) =>
+  publicProcedure
+    .input(zodInputWithAuth(input))
+    .use(authorizationMiddleware(neededPermission));
 
-export const protectedProcedure = publicProcedure
-  .input(zodInputWithAuth(z.null().optional()))
-  .use(authorizationMiddleware);
+export const protectedProcedure = (neededPermission?: Permission) =>
+  publicProcedure
+    .input(zodInputWithAuth(z.null().optional()))
+    .use(authorizationMiddleware(neededPermission));

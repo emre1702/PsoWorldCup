@@ -15,11 +15,12 @@ datasource db {
 }
 
 model user {
-  id        Int      @id @default(autoincrement())
-  discordId String   @unique
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  discordId  String   @unique
+  name       String
+  superadmin Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   permissions permission[]
   logs        log[]
@@ -115,6 +116,10 @@ model log {
   user   user   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: NoAction)
   userId Int
   input  String @default("")
-  type   String @default("")
+  type   LogType
   path   String @default("")
+}
+
+enum LogType {
+  MUTATION
 }
