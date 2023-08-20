@@ -20,3 +20,7 @@ $analog-theme: mat.define-dark-theme(
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.selected-item-container > span.selected-item {
+  max-width: none !important;
+}

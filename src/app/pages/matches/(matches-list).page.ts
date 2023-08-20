@@ -11,10 +11,25 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { RouterModule } from '@angular/router';
 import { MatchesService } from '../../services/matches.service';
-import { TeamsService } from '../../services/teams.service';
 import { ArrayReturnType } from '../../types/array-return-type';
 import { AsyncReturnType } from '../../types/async-return-type';
-import { getAuth, getInputWithAuth, injectTRPCClient } from '../../../trpc-client';
+import {
+  getAuth,
+  getInputWithAuth,
+  injectTRPCClient,
+} from '../../../trpc-client';
+import { RouteMeta } from '@analogjs/router';
+import { combineLatest, forkJoin } from 'rxjs';
+
+export const routeMeta: RouteMeta = {
+  title: 'Matches',
+  canActivate: [
+    () =>
+      injectTRPCClient().permissions.hasPermission.query(
+        getInputWithAuth('SEE_MATCHES')
+      ),
+  ],
+};
 
 @Component({
   selector: 'app-list-matches',
@@ -81,7 +96,11 @@ import { getAuth, getInputWithAuth, injectTRPCClient } from '../../../trpc-clien
             <!--<a mat-icon-button [routerLink]="['/matches/edit', match.id]">
               <mat-icon>edit</mat-icon>
             </a>-->
-            <button mat-icon-button (click)="deleteMatch(match.id)">
+            <button
+              mat-icon-button
+              *ngIf="canDelete"
+              (click)="deleteMatch(match.id)"
+            >
               <mat-icon color="warn"> delete </mat-icon>
             </button>
           </td>
@@ -118,6 +137,7 @@ export default class ListMatchesComponent {
     ArrayReturnType<AsyncReturnType<MatchesService['getMatches']>>
   > = new MatTableDataSource();
   teamLogoById: { [id: number]: string } = {};
+  canDelete = false;
   loading = true;
 
   @ViewChild(MatPaginator) set paginator(value: MatPaginator) {
@@ -128,15 +148,20 @@ export default class ListMatchesComponent {
   }
 
   ngOnInit() {
-    this.trpcClient.matches.list.query(getAuth()).subscribe((matches) => {
+    forkJoin([
+      this.trpcClient.matches.list.query(getAuth()),
+      this.trpcClient.teams.list.query(getAuth()),
+      this.trpcClient.permissions.hasPermission.query(
+        getInputWithAuth('DELETE_MATCH')
+      ),
+    ]).subscribe(([matches, teams, canDelete]) => {
       this.dataSource.data = matches;
-      this.loading = false;
-    });
-    this.trpcClient.teams.list.query(getAuth()).subscribe((teams) => {
       teams.forEach((team) => {
         if (!team.logo) return;
         this.teamLogoById[team.id] = team.logo;
       });
+      this.canDelete = canDelete;
+      this.loading = false;
     });
   }
 
@@ -171,10 +196,12 @@ export default class ListMatchesComponent {
   deleteMatch(id: number) {
     // with confirm
     if (!confirm('Are you sure you want to delete this match?')) return;
-    this.trpcClient.matches.delete.mutate(getInputWithAuth(id)).subscribe(() => {
-      this.dataSource.data = this.dataSource.data.filter(
-        (match) => match.id !== id
-      );
-    });
+    this.trpcClient.matches.delete
+      .mutate(getInputWithAuth(id))
+      .subscribe(() => {
+        this.dataSource.data = this.dataSource.data.filter(
+          (match) => match.id !== id
+        );
+      });
   }
 }

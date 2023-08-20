@@ -13,10 +13,20 @@ import { TeamsService } from '../../services/teams.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { RouteMeta } from '@analogjs/router';
-import { getAuth, getInputWithAuth } from '../../../trpc-client';
+import {
+  getAuth,
+  getInputWithAuth,
+  injectTRPCClient,
+} from '../../../trpc-client';
 
 export const routeMeta: RouteMeta = {
   title: 'Create Player',
+  canActivate: [
+    () =>
+      injectTRPCClient().permissions.hasPermission.query(
+        getInputWithAuth('CREATE_PLAYER')
+      ),
+  ],
 };
 
 @Component({

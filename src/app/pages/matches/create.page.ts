@@ -19,7 +19,11 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { RouteMeta } from '@analogjs/router';
-import { getAuth, getInputWithAuth, injectTRPCClient } from '../../../trpc-client';
+import {
+  getAuth,
+  getInputWithAuth,
+  injectTRPCClient,
+} from '../../../trpc-client';
 import {
   MatTable,
   MatTableDataSource,
@@ -33,7 +37,13 @@ import { map, pairwise, startWith } from 'rxjs/operators';
 import { merge } from 'rxjs';
 
 export const routeMeta: RouteMeta = {
-  title: 'Create match',
+  title: 'Create Match',
+  canActivate: [
+    () =>
+      injectTRPCClient().permissions.hasPermission.query(
+        getInputWithAuth('CREATE_MATCH')
+      ),
+  ],
 };
 
 @Component({
@@ -336,30 +346,32 @@ export default class PlayerCreateComponent implements OnInit {
   createMatch() {
     const value = this.formGroup.value;
     this.trpcClient.matches.create
-      .mutate(getInputWithAuth({
-        date: value[this.formFields.date] as Date,
-        round: value[this.formFields.round] as number,
-        team1Id: value[this.formFields.team1Id] as number,
-        team2Id: value[this.formFields.team2Id] as number,
-        team1Score: value[this.formFields.team1Score] as number,
-        team2Score: value[this.formFields.team2Score] as number,
-        statistics: (value[this.formFields.statistics] as any[][]).flatMap(
-          (e) =>
-            e.map((e) => ({
-              playerId: e.player as number,
-              score: e.Score as number,
-              goals: e.Goals as number,
-              assists: e.Assists as number,
-              catches: e.Catches as number,
-              interceptions: e.INTs as number,
-              tackles: e.TKLs as number,
-              passes: e.Passes as number,
-              saves: e.Saves as number,
-              shots: e.Shots as number,
-              teamId: e.teamId as number,
-            }))
-        ),
-      }))
+      .mutate(
+        getInputWithAuth({
+          date: value[this.formFields.date] as Date,
+          round: value[this.formFields.round] as number,
+          team1Id: value[this.formFields.team1Id] as number,
+          team2Id: value[this.formFields.team2Id] as number,
+          team1Score: value[this.formFields.team1Score] as number,
+          team2Score: value[this.formFields.team2Score] as number,
+          statistics: (value[this.formFields.statistics] as any[][]).flatMap(
+            (e) =>
+              e.map((e) => ({
+                playerId: e.player as number,
+                score: e.Score as number,
+                goals: e.Goals as number,
+                assists: e.Assists as number,
+                catches: e.Catches as number,
+                interceptions: e.INTs as number,
+                tackles: e.TKLs as number,
+                passes: e.Passes as number,
+                saves: e.Saves as number,
+                shots: e.Shots as number,
+                teamId: e.teamId as number,
+              }))
+          ),
+        })
+      )
       .subscribe(() => this.router.navigate(['/matches']));
   }
 
@@ -376,9 +388,11 @@ export default class PlayerCreateComponent implements OnInit {
         statsFormArray.removeAt(statsFormArray.controls.indexOf(e));
       }
     });
-    this.trpcClient.players.listByTeam.query(getInputWithAuth(teamId)).subscribe((e) => {
-      this.playersOfTeam[teamIndex] = e;
-    });
+    this.trpcClient.players.listByTeam
+      .query(getInputWithAuth(teamId))
+      .subscribe((e) => {
+        this.playersOfTeam[teamIndex] = e;
+      });
 
     this.tables?.get(teamIndex)?.renderRows();
   }

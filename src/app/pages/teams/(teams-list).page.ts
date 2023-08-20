@@ -19,7 +19,23 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { getAuth, getInputWithAuth } from '../../../trpc-client';
+import {
+  getAuth,
+  getInputWithAuth,
+  injectTRPCClient,
+} from '../../../trpc-client';
+import { RouteMeta } from '@analogjs/router';
+import { forkJoin } from 'rxjs';
+
+export const routeMeta: RouteMeta = {
+  title: 'Teams',
+  canActivate: [
+    () =>
+      injectTRPCClient().permissions.hasPermission.query(
+        getInputWithAuth('SEE_TEAMS')
+      ),
+  ],
+};
 
 @Component({
   selector: 'app-teams-list',
@@ -78,7 +94,11 @@ import { getAuth, getInputWithAuth } from '../../../trpc-client';
             <a mat-icon-button [routerLink]="['/teams/edit', player.id]">
               <mat-icon>edit</mat-icon>
             </a>
-            <button mat-icon-button (click)="deleteTeam(player.id)">
+            <button
+              mat-icon-button
+              *ngIf="canDelete"
+              (click)="deleteTeam(player.id)"
+            >
               <mat-icon color="warn"> delete </mat-icon>
             </button>
           </td>
@@ -102,12 +122,14 @@ import { getAuth, getInputWithAuth } from '../../../trpc-client';
 })
 export default class TeamsListComponent implements OnInit, AfterViewInit {
   private readonly teamsService = inject(TeamsService);
+  private readonly trpcClient = injectTRPCClient();
 
   displayedColumns: string[] = ['id', 'logo', 'name', 'captain', 'actions'];
   dataSource: MatTableDataSource<
     ArrayReturnType<AsyncReturnType<TeamsService['getTeams']>>
   > = new MatTableDataSource();
   loading = true;
+  canDelete = false;
 
   @ViewChild(MatPaginator) set paginator(value: MatPaginator) {
     this.dataSource.paginator = value;
@@ -117,8 +139,14 @@ export default class TeamsListComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.teamsService.getTeams(getAuth()).subscribe((teams) => {
+    forkJoin([
+      this.teamsService.getTeams(getAuth()),
+      this.trpcClient.permissions.hasPermission.query(
+        getInputWithAuth('DELETE_TEAM')
+      ),
+    ]).subscribe(([teams, canDelete]) => {
       this.dataSource.data = teams;
+      this.canDelete = canDelete;
       this.loading = false;
     });
   }

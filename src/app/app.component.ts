@@ -6,8 +6,9 @@ import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { injectTRPCClient } from '../trpc-client';
+import { getAuth, injectTRPCClient } from '../trpc-client';
 import { firstValueFrom } from 'rxjs';
+import { Permission } from '@prisma/client';
 
 @Component({
   selector: 'app-root',
@@ -51,12 +52,17 @@ import { firstValueFrom } from 'rxjs';
         opened
       >
         <mat-nav-list>
-          <a
-            mat-list-item
-            [routerLink]="nav.route"
-            *ngFor="let nav of navigations"
-            >{{ nav.name }}</a
-          >
+          <ng-container *ngFor="let nav of navigations">
+            <a
+              *ngIf="
+                !nav.neededPermission ||
+                permissions.includes(nav.neededPermission)
+              "
+              mat-list-item
+              [routerLink]="nav.route"
+              >{{ nav.name }}</a
+            >
+          </ng-container>
         </mat-nav-list>
       </mat-sidenav>
 
@@ -67,16 +73,24 @@ import { firstValueFrom } from 'rxjs';
   </div> `,
 })
 export class AppComponent implements OnInit {
-  navigations: { route: string; name: string }[] = [
-    { route: '/teams', name: 'Teams' },
-    { route: '/players', name: 'Players' },
-    { route: '/matches', name: 'Matches' },
+  private readonly trpcClient = injectTRPCClient();
+
+  navigations: {
+    route: string;
+    name: string;
+    neededPermission?: Permission;
+  }[] = [
+    { route: '/teams', name: 'Teams', neededPermission: 'SEE_TEAMS' },
+    { route: '/players', name: 'Players', neededPermission: 'SEE_PLAYERS' },
+    { route: '/matches', name: 'Matches', neededPermission: 'SEE_MATCHES' },
     { route: '/player-stats', name: 'Player Stats' },
+    { route: '/users', name: 'Users', neededPermission: 'SEE_USERS' },
   ];
 
   mobileQuery: MediaQueryList;
   loading = true;
-  trpcClient = injectTRPCClient();
+  permissions: string[] = [];
+  private permissionsLoaded = false;
 
   private _mobileQueryListener: () => void;
 
@@ -95,14 +109,25 @@ export class AppComponent implements OnInit {
   }
 
   private async onNavigate() {
+    if (this.permissionsLoaded) return;
+
     this.loading = true;
     if (typeof window === 'undefined') return;
 
-    console.log(localStorage);
     const token = localStorage.getItem('discord-token');
-    console.log(token, window.location.pathname);
     if (window.location.pathname === '/auth/discord-callback' || token) {
-      this.loading = false;
+      if (token) {
+        this.trpcClient.permissions.getPermissions
+          .query(getAuth())
+          .subscribe((perms) => {
+            this.permissions = perms;
+            this.permissionsLoaded = true;
+            this.loading = false;
+          });
+      } else {
+        this.loading = false;
+      }
+
       return;
     }
 

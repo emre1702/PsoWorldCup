@@ -11,12 +11,25 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { PlayersService } from '../../services/players.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TeamsService } from '../../services/teams.service';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
-import { TrpcClient, getAuth, getInputWithAuth } from '../../../trpc-client';
+import {
+  getAuth,
+  getInputWithAuth,
+  injectTRPCClient,
+} from '../../../trpc-client';
+import { RouteMeta } from '@analogjs/router';
+
+export const routeMeta: RouteMeta = {
+  title: 'Update Team',
+  canActivate: [
+    () =>
+      injectTRPCClient().permissions.hasPermission.query(
+        getInputWithAuth('UPDATE_TEAM')
+      ),
+  ],
+};
 
 @Component({
   selector: 'app-team-edit',
@@ -148,7 +161,7 @@ import { TrpcClient, getAuth, getInputWithAuth } from '../../../trpc-client';
 export default class TeamEditPage implements OnInit {
   @Input({ required: true }) teamId!: string;
 
-  private readonly trpcClient = inject(TrpcClient);
+  private readonly trpcClient = injectTRPCClient();
   private readonly router = inject(Router);
 
   readonly formFields = {

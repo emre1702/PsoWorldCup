@@ -5,6 +5,8 @@ import { playersRouter } from './players';
 import { matchesRouter } from './matches';
 import { playerStatsRouter } from './player-stats';
 import { authenticationRouter } from './authentication';
+import { usersRouter } from './users';
+import { permissionsRouter } from './permissions';
 
 export const appRouter = router({
   teams: teamsRouter,
@@ -12,6 +14,8 @@ export const appRouter = router({
   matches: matchesRouter,
   playerStats: playerStatsRouter,
   authentication: authenticationRouter,
+  users: usersRouter,
+  permissions: permissionsRouter,
 });
 
 export type AppRouter = typeof appRouter;

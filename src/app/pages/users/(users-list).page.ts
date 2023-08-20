@@ -1,4 +1,4 @@
-import { CommonModule, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import {
   AfterViewInit,
@@ -8,16 +8,13 @@ import {
   inject,
 } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { TeamsService } from '../../services/teams.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { AsyncReturnType } from 'src/app/types/async-return-type';
 import { ArrayReturnType } from 'src/app/types/array-return-type';
 import { MatInputModule } from '@angular/material/input';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
-import { PlayersService } from '../../services/players.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
@@ -25,23 +22,14 @@ import {
   getInputWithAuth,
   injectTRPCClient,
 } from '../../../trpc-client';
-import { RouteMeta } from '@analogjs/router';
+import { RouterOutputs } from '../../../server/trpc/routers';
 import { forkJoin } from 'rxjs';
 
-export const routeMeta: RouteMeta = {
-  title: 'Players',
-  canActivate: [
-    () =>
-      injectTRPCClient().permissions.hasPermission.query(
-        getInputWithAuth('SEE_PLAYERS')
-      ),
-  ],
-};
-
 @Component({
-  selector: 'app-players-list',
+  selector: 'app-users-list',
   standalone: true,
   imports: [
+    CommonModule,
     RouterModule,
     HttpClientModule,
     MatFormFieldModule,
@@ -52,12 +40,9 @@ export const routeMeta: RouteMeta = {
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    NgIf,
   ],
   template: ` <div class="flex flex-row gap-4">
-      <button mat-raised-button routerLink="/players/create">
-        Create Player
-      </button>
+      <button mat-raised-button routerLink="/users/create">Create User</button>
 
       <mat-form-field>
         <mat-label>Filter</mat-label>
@@ -75,42 +60,33 @@ export const routeMeta: RouteMeta = {
       <table mat-table [dataSource]="dataSource" matSort *ngIf="!loading">
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
-          <td mat-cell *matCellDef="let player">{{ player.id }}</td>
+          <td mat-cell *matCellDef="let user">{{ user.id }}</td>
+        </ng-container>
+        <ng-container matColumnDef="discordId">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Discord Id</th>
+          <td mat-cell *matCellDef="let user">{{ user.discordId }}</td>
         </ng-container>
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-          <td mat-cell *matCellDef="let player">{{ player.name }}</td>
+          <td mat-cell *matCellDef="let user">{{ user.name }}</td>
         </ng-container>
-        <ng-container matColumnDef="team">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Team</th>
-          <td mat-cell *matCellDef="let player">
-            <div class="flex flex-row gap-2">
-              <img
-                *ngIf="player.team && teamLogoById[player.team.id]"
-                [src]="teamLogoById[player.team.id]"
-                class="w-10 h-10"
-              />
-              <span class="self-center"> {{ player.team?.name }}</span>
-            </div>
+        <ng-container matColumnDef="permissions">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Permissions</th>
+          <td mat-cell *matCellDef="let user">
+            {{ user.permissions.join(', ') }}
           </td>
         </ng-container>
-        <ng-container matColumnDef="isCaptain">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Is captain</th>
-          <!-- Use icon -->
-          <td mat-cell *matCellDef="let player">
-            <mat-icon>{{ player.isCaptain ? 'check' : 'close' }}</mat-icon>
-          </td>
-        </ng-container>
+
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef>Actions</th>
-          <td mat-cell *matCellDef="let player">
-            <a mat-icon-button [routerLink]="['/players/edit', player.id]">
+          <td mat-cell *matCellDef="let user">
+            <a mat-icon-button [routerLink]="['/users/edit', user.id]">
               <mat-icon>edit</mat-icon>
             </a>
             <button
               mat-icon-button
               *ngIf="canDelete"
-              (click)="deletePlayer(player.id)"
+              (click)="deleteUser(user.id)"
             >
               <mat-icon color="warn"> delete </mat-icon>
             </button>
@@ -118,7 +94,7 @@ export const routeMeta: RouteMeta = {
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let player; columns: displayedColumns"></tr>
+        <tr mat-row *matRowDef="let user; columns: displayedColumns"></tr>
 
         <tr class="mat-row" *matNoDataRow>
           <td class="mat-cell" colspan="4">
@@ -129,22 +105,25 @@ export const routeMeta: RouteMeta = {
 
       <mat-paginator
         [pageSizeOptions]="[5, 10, 25, 100]"
-        aria-label="Select page of players"
+        aria-label="Select page of users"
       ></mat-paginator>
     </div>`,
 })
-export default class TeamsListComponent implements OnInit, AfterViewInit {
-  private readonly teamsService = inject(TeamsService);
-  private readonly playersService = inject(PlayersService);
+export default class UsersListComponent implements OnInit, AfterViewInit {
   private readonly trpcClient = injectTRPCClient();
 
-  displayedColumns: string[] = ['id', 'name', 'team', 'isCaptain', 'actions'];
+  displayedColumns: string[] = [
+    'id',
+    'discordId',
+    'name',
+    'permissions',
+    'actions',
+  ];
   dataSource: MatTableDataSource<
-    ArrayReturnType<AsyncReturnType<PlayersService['getPlayers']>>
+    ArrayReturnType<RouterOutputs['users']['list']>
   > = new MatTableDataSource();
-  teamLogoById: { [id: number]: string } = {};
-  canDelete = false;
   loading = true;
+  canDelete = false;
 
   @ViewChild(MatPaginator) set paginator(value: MatPaginator) {
     this.dataSource.paginator = value;
@@ -155,34 +134,25 @@ export default class TeamsListComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     forkJoin([
-      this.playersService.getPlayers(getAuth()),
-      this.teamsService.getTeams(getAuth()),
       this.trpcClient.permissions.hasPermission.query(
-        getInputWithAuth('DELETE_PLAYER')
+        getInputWithAuth('DELETE_USER')
       ),
-    ]).subscribe(([players, teams, canDelete]) => {
-      this.dataSource.data = players;
-      teams.forEach((team) => {
-        if (!team.logo) return;
-        this.teamLogoById[team.id] = team.logo;
-      });
+      this.trpcClient.users.list.query(getAuth()),
+    ]).subscribe(([canDelete, users]) => {
       this.canDelete = canDelete;
+      this.dataSource.data = users;
       this.loading = false;
     });
   }
 
   ngAfterViewInit() {
-    this.dataSource.sortingDataAccessor = (item, property) => {
-      switch (property) {
-        case 'team':
-          return item.team?.name;
-        default:
-          return (item as any)[property];
-      }
+    this.dataSource.filterPredicate = (data, filter) => {
+      return (
+        data.name.toLowerCase().includes(filter) ||
+        data.discordId.toLowerCase().includes(filter) ||
+        data.permissions.join(', ').toLowerCase().includes(filter)
+      );
     };
-    this.dataSource.filterPredicate = (data, filter) =>
-      data.name.toLowerCase().includes(filter.toLowerCase()) ||
-      data.team?.name.toLowerCase().includes(filter.toLowerCase()) === true;
   }
 
   applyFilter(event: Event) {
@@ -195,12 +165,10 @@ export default class TeamsListComponent implements OnInit, AfterViewInit {
     }
   }
 
-  deletePlayer(id: number) {
-    // with confirm
-    if (!confirm('Are you sure you want to delete this player?')) return;
-    this.playersService.deletePlayer(getInputWithAuth(id)).subscribe(() => {
+  deleteUser(id: number) {
+    this.trpcClient.users.delete.mutate(getInputWithAuth(id)).subscribe(() => {
       this.dataSource.data = this.dataSource.data.filter(
-        (player) => player.id !== id
+        (user) => user.id !== id
       );
     });
   }

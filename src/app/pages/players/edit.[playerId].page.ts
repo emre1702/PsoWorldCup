@@ -14,7 +14,22 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TeamsService } from '../../../app/services/teams.service';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
-import { getAuth, getInputWithAuth } from '../../../trpc-client';
+import {
+  getAuth,
+  getInputWithAuth,
+  injectTRPCClient,
+} from '../../../trpc-client';
+import { RouteMeta } from '@analogjs/router';
+
+export const routeMeta: RouteMeta = {
+  title: 'Edit Player',
+  canActivate: [
+    () =>
+      injectTRPCClient().permissions.hasPermission.query(
+        getInputWithAuth('UPDATE_PLAYER')
+      ),
+  ],
+};
 
 @Component({
   selector: 'app-players-edit',
