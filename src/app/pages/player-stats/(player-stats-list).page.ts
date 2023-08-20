@@ -23,6 +23,7 @@ import { MatButtonModule } from '@angular/material/button';
       <button
         mat-raised-button
         color="primary"
+        [disabled]="!group.value"
         (click)="loadPlayerStats(group.value)"
       >
         Load

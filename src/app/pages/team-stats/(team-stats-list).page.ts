@@ -23,6 +23,7 @@ import TeamStatsTableComponent from './team-stats-table.component';
       <button
         mat-raised-button
         color="primary"
+        [disabled]="!group.value"
         (click)="loadTeamStats(group.value)"
       >
         Load
