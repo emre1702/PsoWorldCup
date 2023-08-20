@@ -14,6 +14,9 @@ export default defineConfig(({ mode }) => ({
   build: {
     target: ['es2020'],
   },
+  ssr: {
+    noExternal: '@analogjs/trpc',
+  },
   plugins: [
     analog({
       ssr: true,
