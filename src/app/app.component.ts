@@ -84,7 +84,7 @@ export class AppComponent implements OnInit {
     { route: '/players', name: 'Players', neededPermission: 'SEE_PLAYERS' },
     { route: '/matches', name: 'Matches', neededPermission: 'SEE_MATCHES' },
     { route: '/player-stats', name: 'Player Stats' },
-    { route: '/player-stats', name: 'Team Stats' },
+    { route: '/team-stats', name: 'Team Stats' },
     { route: '/users', name: 'Users', neededPermission: 'SEE_USERS' },
   ];
 
