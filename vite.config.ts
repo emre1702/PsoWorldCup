@@ -11,9 +11,6 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     include: ['@angular/common', '@angular/forms', 'isomorphic-fetch'],
   },
-  ssr: {
-    noExternal: [],
-  },
   build: {
     target: ['es2020'],
   },
