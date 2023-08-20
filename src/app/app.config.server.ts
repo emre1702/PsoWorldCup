@@ -1,8 +1,4 @@
-import {
-  mergeApplicationConfig,
-  ApplicationConfig,
-  importProvidersFrom,
-} from '@angular/core';
+import { mergeApplicationConfig, ApplicationConfig } from '@angular/core';
 import {
   provideServerRendering,
   ɵSERVER_CONTEXT as SERVER_CONTEXT,
@@ -10,7 +6,6 @@ import {
 import { appConfig } from './app.config';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideClientHydration } from '@angular/platform-browser';
-import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 const serverConfig: ApplicationConfig = {
   providers: [
@@ -18,7 +13,6 @@ const serverConfig: ApplicationConfig = {
     provideClientHydration(),
     provideNoopAnimations(),
     { provide: SERVER_CONTEXT, useValue: 'ssr-analog' },
-    importProvidersFrom(NgMultiSelectDropDownModule.forRoot()),
   ],
 };
 

@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, inject, importProvidersFrom } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -16,6 +16,11 @@ import {
   NgMultiSelectDropDownModule,
 } from 'ng-multiselect-dropdown';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RouteMeta } from '@analogjs/router';
+
+export const routeMeta: RouteMeta = {
+  providers: [importProvidersFrom(NgMultiSelectDropDownModule.forRoot())],
+};
 
 @Component({
   selector: 'app-users-update',

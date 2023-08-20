@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, importProvidersFrom } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -12,6 +12,11 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { getInputWithAuth, injectTRPCClient } from '../../../trpc-client';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { RouteMeta } from '@analogjs/router';
+
+export const routeMeta: RouteMeta = {
+  providers: [importProvidersFrom(NgMultiSelectDropDownModule.forRoot())],
+};
 
 @Component({
   selector: 'app-users-create',
