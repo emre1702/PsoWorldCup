@@ -50,7 +50,7 @@ export const routeMeta: RouteMeta = {
   ],
   template: ` <div class="flex flex-row gap-4">
       <button mat-raised-button routerLink="/matches/create">
-        Create match
+        Create Match
       </button>
 
       <mat-form-field>
