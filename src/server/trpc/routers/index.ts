@@ -7,12 +7,14 @@ import { playerStatsRouter } from './player-stats';
 import { authenticationRouter } from './authentication';
 import { usersRouter } from './users';
 import { permissionsRouter } from './permissions';
+import { teamStatsRouter } from './team-stats';
 
 export const appRouter = router({
   teams: teamsRouter,
   players: playersRouter,
   matches: matchesRouter,
   playerStats: playerStatsRouter,
+  teamStats: teamStatsRouter,
   authentication: authenticationRouter,
   users: usersRouter,
   permissions: permissionsRouter,
