@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     include: ['@angular/common', '@angular/forms', 'isomorphic-fetch'],
   },
-  sssr: {
+  ssr: {
     noExternal: ['@angular/**', '@analogjs/**'],
   },
   build: {
@@ -27,10 +27,9 @@ export default defineConfig(({ mode }) => ({
         preset: 'vercel',
         serveStatic: false,
       },
-
     }),
     tsConfigPaths({
-      root: './'
+      root: './',
     }),
     visualizer(),
     splitVendorChunkPlugin(),
